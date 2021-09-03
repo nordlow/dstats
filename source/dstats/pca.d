@@ -220,7 +220,7 @@ private PrincipalComponent firstComponentImpl(Ror)(
               buf.rotation[0..rowLen] : new double[rowLen];
     p[] = 1;
 
-    bool isCloseOrNotFinite(const double[] a, const double[] b) {
+    bool approxEqualOrNotFinite(const double[] a, const double[] b) {
         foreach(i; 0..a.length) {
             if(!isFinite(a[i]) || !isFinite(b[i])) {
                 return true;
@@ -281,7 +281,7 @@ private PrincipalComponent firstComponentImpl(Ror)(
         immutable tMagnitude = magnitude(t);
         t[] /= tMagnitude;
 
-        if(isCloseOrNotFinite(t, p)) {
+        if(approxEqualOrNotFinite(t, p)) {
             p[] = t[];
             break;
         }
