@@ -535,7 +535,7 @@ private void averageTies(T, U)(T sortedInput, U[] ranks, size_t[] perms)
 in {
     assert(sortedInput.length == ranks.length);
     assert(ranks.length == perms.length);
-} body {
+} do {
     size_t tieCount = 1;
     foreach(i; 1..ranks.length) {
         if(sortedInput[i] == sortedInput[i - 1]) {
@@ -861,7 +861,7 @@ unittest {
 double logNcomb(ulong n, ulong k)
 in {
     assert(k <= n);
-} body {
+} do {
     if(n < k) return -double.infinity;
     //Extra parentheses increase numerical accuracy.
     return logFactorial(n) - (logFactorial(k) + logFactorial(n - k));
@@ -1225,7 +1225,7 @@ public:
         this(uint n, uint r)
         in {
             assert(n >= r);
-        } body {
+        } do {
             if(r > 0) {
                 pos = (seq(0U, r)).ptr;
                 pos[r - 1]--;

@@ -231,7 +231,7 @@ enum POISSON_NORMAL = 1UL << 12;  // Where to switch to normal approx.
 private double normApproxPoisCDF(ulong k, double lambda)
 in {
     assert(lambda > 0);
-} body {
+} do {
     double sd = sqrt(lambda);
     // mean == lambda.
     return normalCDF(k + 0.5L, lambda, sd);
@@ -281,7 +281,7 @@ unittest {
 private double normApproxPoisCDFR(ulong k, double lambda)
 in {
     assert(lambda > 0);
-} body {
+} do {
     double sd = sqrt(lambda);
     // mean == lambda.
     return normalCDFR(k - 0.5L, lambda, sd);
@@ -406,7 +406,7 @@ private double normApproxBinomCDF(double k, double n, double p)
 in {
     assert(k <= n);
     assert(p >= 0 && p <= 1);
-} body {
+} do {
     double mu = p * n;
     double sd = sqrt( to!double(n) ) * sqrt(p) * sqrt(1 - p);
     double xCC = k + 0.5L;
@@ -485,7 +485,7 @@ private double normApproxBinomCDFR(ulong k, ulong n, double p)
 in {
     assert(k <= n);
     assert(p >= 0 && p <= 1);
-} body {
+} do {
     double mu = p * n;
     double sd = sqrt( to!double(n) ) * sqrt(p)  * sqrt(1 - p);
     double xCC = k - 0.5L;
@@ -625,7 +625,7 @@ unittest {
 double hypergeometricPMF(long x, long n1, long n2, long n)
 in {
     assert(x <= n);
-} body {
+} do {
     if(x > n1 || x < (n - n2)) {
         return 0;
     }
