@@ -760,40 +760,40 @@ unittest {
 
     // Values from R.
     auto res1 = polyFit(diseaseSev, temperature, 1);
-    assert(approxEqual(res1.betas[0], 2.6623));
-    assert(approxEqual(res1.betas[1], 0.2417));
-    assert(approxEqual(res1.stdErr[0], 1.1008));
-    assert(approxEqual(res1.stdErr[1], 0.0635));
-    assert(approxEqual(res1.p[0], 0.0419));
-    assert(approxEqual(res1.p[1], 0.0052));
-    assert(approxEqual(res1.R2, 0.644));
-    assert(approxEqual(res1.adjustedR2, 0.6001));
-    assert(approxEqual(res1.residualError, 2.03));
-    assert(approxEqual(res1.overallP, 0.00518));
+    assert(isClose(res1.betas[0], 2.6623));
+    assert(isClose(res1.betas[1], 0.2417));
+    assert(isClose(res1.stdErr[0], 1.1008));
+    assert(isClose(res1.stdErr[1], 0.0635));
+    assert(isClose(res1.p[0], 0.0419));
+    assert(isClose(res1.p[1], 0.0052));
+    assert(isClose(res1.R2, 0.644));
+    assert(isClose(res1.adjustedR2, 0.6001));
+    assert(isClose(res1.residualError, 2.03));
+    assert(isClose(res1.overallP, 0.00518));
 
 
     auto res2 = polyFit(weights, heights, 2);
-    assert(approxEqual(res2.betas[0], 128.813));
-    assert(approxEqual(res2.betas[1], -143.162));
-    assert(approxEqual(res2.betas[2], 61.960));
+    assert(isClose(res2.betas[0], 128.813));
+    assert(isClose(res2.betas[1], -143.162));
+    assert(isClose(res2.betas[2], 61.960));
 
-    assert(approxEqual(res2.stdErr[0], 16.308));
-    assert(approxEqual(res2.stdErr[1], 19.833));
-    assert(approxEqual(res2.stdErr[2], 6.008));
+    assert(isClose(res2.stdErr[0], 16.308));
+    assert(isClose(res2.stdErr[1], 19.833));
+    assert(isClose(res2.stdErr[2], 6.008));
 
-    assert(approxEqual(res2.p[0], 4.28e-6));
-    assert(approxEqual(res2.p[1], 1.06e-5));
-    assert(approxEqual(res2.p[2], 2.57e-7));
+    assert(isClose(res2.p[0], 4.28e-6));
+    assert(isClose(res2.p[1], 1.06e-5));
+    assert(isClose(res2.p[2], 2.57e-7));
 
-    assert(approxEqual(res2.R2, 0.9989, 0.0001));
-    assert(approxEqual(res2.adjustedR2, 0.9987, 0.0001));
+    assert(isClose(res2.R2, 0.9989, 0.0001));
+    assert(isClose(res2.adjustedR2, 0.9987, 0.0001));
 
-    assert(approxEqual(res2.lowerBound[0], 92.9, 0.01));
-    assert(approxEqual(res2.lowerBound[1], -186.8, 0.01));
-    assert(approxEqual(res2.lowerBound[2], 48.7, 0.01));
-    assert(approxEqual(res2.upperBound[0], 164.7, 0.01));
-    assert(approxEqual(res2.upperBound[1], -99.5, 0.01));
-    assert(approxEqual(res2.upperBound[2], 75.2, 0.01));
+    assert(isClose(res2.lowerBound[0], 92.9, 0.01));
+    assert(isClose(res2.lowerBound[1], -186.8, 0.01));
+    assert(isClose(res2.lowerBound[2], 48.7, 0.01));
+    assert(isClose(res2.upperBound[0], 164.7, 0.01));
+    assert(isClose(res2.upperBound[1], -99.5, 0.01));
+    assert(isClose(res2.upperBound[2], 75.2, 0.01));
 
     auto res3 = linearRegress(weights, repeat(1), heights, map!"a * a"(heights));
     assert(res2.betas == res3.betas);
@@ -803,22 +803,22 @@ unittest {
         (beta1Buf[], diseaseSev, repeat(1), temperature);
     assert(beta1Buf.ptr == beta1.ptr);
     assert(beta1Buf[] == beta1[]);
-    assert(approxEqual(beta1, res1.betas));
+    assert(isClose(beta1, res1.betas));
     auto beta2 = polyFitBeta(weights, heights, 2);
-    assert(approxEqual(beta2, res2.betas));
+    assert(isClose(beta2, res2.betas));
 
     auto res4 = linearRegress(weights, repeat(1), heights);
-    assert(approxEqual(res4.p, 3.604e-14));
-    assert(approxEqual(res4.betas, [-39.062, 61.272]));
-    assert(approxEqual(res4.p, [6.05e-9, 3.60e-14]));
-    assert(approxEqual(res4.R2, 0.9892));
-    assert(approxEqual(res4.adjustedR2, 0.9884));
-    assert(approxEqual(res4.residualError, 0.7591));
-    assert(approxEqual(res4.lowerBound, [-45.40912, 57.43554]));
-    assert(approxEqual(res4.upperBound, [-32.71479, 65.10883]));
+    assert(isClose(res4.p, 3.604e-14));
+    assert(isClose(res4.betas, [-39.062, 61.272]));
+    assert(isClose(res4.p, [6.05e-9, 3.60e-14]));
+    assert(isClose(res4.R2, 0.9892));
+    assert(isClose(res4.adjustedR2, 0.9884));
+    assert(isClose(res4.residualError, 0.7591));
+    assert(isClose(res4.lowerBound, [-45.40912, 57.43554]));
+    assert(isClose(res4.upperBound, [-32.71479, 65.10883]));
 
     // Test residuals.
-    assert(approxEqual(residuals(res4.betas, weights, repeat(1), heights),
+    assert(isClose(residuals(res4.betas, weights, repeat(1), heights),
         [1.20184170, 0.27367611,  0.40823237, -0.06993322,  0.06462305,
          -0.40354255, -0.88170814,  -0.74715188, -0.76531747, -0.63076120,
          -0.65892680, -0.06437053, -0.08253613,  0.96202014,  1.39385455]));
@@ -831,16 +831,16 @@ unittest {
 
     // With a ridge param. of zero, ridge regression reduces to regular
     // OLS regression.
-    assert(approxEqual(linearRegressBeta(a, repeat(1), b, c, 0),
+    assert(isClose(linearRegressBeta(a, repeat(1), b, c, 0),
         linearRegressBeta(a, repeat(1), b, c)));
 
     // Test the ridge regression. Values from R MASS package.
     auto ridge1 = linearRegressBeta(a, repeat(1), b, c, 1);
     auto ridge2 = linearRegressBeta(a, repeat(1), b, c, 2);
     auto ridge3 = linearRegressBeta(c, [[1,1,1,1,1,1,1], a, b], 10);
-    assert(approxEqual(ridge1, [6.0357757, -0.2729671, -0.1337131]));
-    assert(approxEqual(ridge2, [5.62367784, -0.22449854, -0.09775174]));
-    assert(approxEqual(ridge3, [5.82653624, -0.05197246, -0.27185592 ]));
+    assert(isClose(ridge1, [6.0357757, -0.2729671, -0.1337131]));
+    assert(isClose(ridge2, [5.62367784, -0.22449854, -0.09775174]));
+    assert(isClose(ridge3, [5.82653624, -0.05197246, -0.27185592 ]));
 }
 
 private MeanSD[] calculateSummaries(X...)(X xIn, RegionAllocator alloc) {
@@ -1396,11 +1396,11 @@ unittest {
         // the wide tolerance.  However, if the direct normal equations
         // and linalg trick don't agree extremely closely, then something's
         // fundamentally wrong.
-        assert(approxEqual(normalEq, coordDescent, 0.02, 1e-4), text(
+        assert(isClose(normalEq, coordDescent, 0.02, 1e-4), text(
             normalEq, coordDescent));
-        assert(approxEqual(linalgTrick, coordDescent, 0.02, 1e-4), text(
+        assert(isClose(linalgTrick, coordDescent, 0.02, 1e-4), text(
             linalgTrick, coordDescent));
-        assert(approxEqual(normalEq, linalgTrick, 1e-6, 1e-8), text(
+        assert(isClose(normalEq, linalgTrick, 1e-6, 1e-8), text(
             normalEq, linalgTrick));
     }
 
@@ -1412,13 +1412,13 @@ unittest {
          [3.0, 1, 4, 1, 5, 9, 2],
          [2.0, 7, 1, 8, 2, 8, 1]];
 
-    assert(approxEqual(linearRegressPenalized(y, x, 1, 0),
+    assert(isClose(linearRegressPenalized(y, x, 1, 0),
         [4.16316, -0.3603197, 0.6308278, 0, -0.2633263]));
-    assert(approxEqual(linearRegressPenalized(y, x, 1, 3),
+    assert(isClose(linearRegressPenalized(y, x, 1, 3),
         [2.519590, -0.09116883, 0.38067757, 0.13122413, -0.05637939]));
-    assert(approxEqual(linearRegressPenalized(y, x, 2, 0.1),
+    assert(isClose(linearRegressPenalized(y, x, 2, 0.1),
         [1.247235, 0, 0.4440735, 0.2023602, 0]));
-    assert(approxEqual(linearRegressPenalized(y, x, 5, 7),
+    assert(isClose(linearRegressPenalized(y, x, 5, 7),
         [3.453787, 0, 0.10968736, 0.01253992, 0]));
 }
 
@@ -1573,7 +1573,7 @@ unittest {
     // R doesn't automatically calculate likelihood ratio P-value, and reports
     // deviations instead of log likelihoods.  Deviations are just
     // -2 * likelihood.
-    alias approxEqual ae;  // Save typing.
+    alias isClose ae;  // Save typing.
 
     // Start with the basics, with X as a ror.
     auto y1 =  [1,   0, 0, 0, 1, 0, 0];
@@ -1828,19 +1828,19 @@ unittest {
         // the wide tolerance.  However, if the direct normal equations
         // and linalg trick don't agree extremely closely, then something's
         // fundamentally wrong.
-        assert(approxEqual(normalEq, coordDescent, 0.02, 1e-4), text(
+        assert(isClose(normalEq, coordDescent, 0.02, 1e-4), text(
             normalEq, coordDescent));
-        assert(approxEqual(linalgTrick, coordDescent, 0.02, 1e-4), text(
+        assert(isClose(linalgTrick, coordDescent, 0.02, 1e-4), text(
             linalgTrick, coordDescent));
-        assert(approxEqual(normalEq, linalgTrick, 1e-6, 1e-8), text(
+        assert(isClose(normalEq, linalgTrick, 1e-6, 1e-8), text(
             normalEq, linalgTrick));
     }
 
-    assert(approxEqual(logisticRegressBeta(y, x[0], x[1], x[2]),
+    assert(isClose(logisticRegressBeta(y, x[0], x[1], x[2]),
         logisticRegressPenalized(y, x[1], x[2], 0, 0)));
-    assert(approxEqual(logisticRegressBeta(y, [x[0], x[1], x[2]]),
+    assert(isClose(logisticRegressBeta(y, [x[0], x[1], x[2]]),
         logisticRegressPenalized(y, [x[1], x[2]], 0, 0)));
-    assert(approxEqual(logisticRegressBeta(y, [x[0], x[1], x[2]]),
+    assert(isClose(logisticRegressBeta(y, [x[0], x[1], x[2]]),
         logisticRegressPenalized(y,
         [to!(float[])(x[1]), to!(float[])(x[2])], 0, 0)));
 
@@ -1857,13 +1857,13 @@ unittest {
 
     // Values from R's Penalized package.  Note that it uses a convention for
     // the ridge parameter such that Penalized ridge = 2 * dstats ridge.
-    assert(approxEqual(logisticRegressPenalized(y, x, 1, 0),
+    assert(isClose(logisticRegressPenalized(y, x, 1, 0),
         [1.642080, -0.22086515, -0.02587546,  0.00000000, 0.00000000 ]));
-    assert(approxEqual(logisticRegressPenalized(y, x, 1, 3),
+    assert(isClose(logisticRegressPenalized(y, x, 1, 3),
         [0.5153373, -0.04278257, -0.00888014,  0.01316831,  0.00000000]));
-    assert(approxEqual(logisticRegressPenalized(y, x, 2, 0.1),
+    assert(isClose(logisticRegressPenalized(y, x, 2, 0.1),
         [0.2876821, 0, 0., 0., 0]));
-    assert(approxEqual(logisticRegressPenalized(y, x, 1.2, 7),
+    assert(isClose(logisticRegressPenalized(y, x, 1.2, 7),
         [0.367613 , -0.017227631, 0.000000000, 0.003875104, 0.000000000]));
 }
 
@@ -1961,18 +1961,18 @@ unittest {
     // Values from R's lowess() function.  This gets slightly different
     // results than loess(), probably due to disagreements bout windowing
     // details.
-    assert(approxEqual(loess1.predictions(0),
+    assert(isClose(loess1.predictions(0),
         [2.9193046, 3.6620295, 4.2229953, 5.2642335, 5.3433985, 4.4225636,
          2.7719778, 0.6643268]
     ));
 
     loess1 = loess1D(y, x, 0.5, 1);
-    assert(approxEqual(loess1.predictions(0),
+    assert(isClose(loess1.predictions(0),
         [2.1615941, 4.0041736, 4.5642738, 4.8631052, 5.7136895, 5.5642738,
          2.8631052, -0.1977227]
     ));
 
-    assert(approxEqual(loess1.predictions(2),
+    assert(isClose(loess1.predictions(2),
         [2.2079526, 3.9809030, 4.4752888, 4.8849727, 5.7260333, 5.4465225,
          2.8769120, -0.1116018]
     ));
@@ -1980,7 +1980,7 @@ unittest {
     // Test 0th and 2nd order using R's loess() function since lowess() doesn't
     // support anything besides first degree.
     auto loess0 = loess1D(y, x, 0.5, 0);
-    assert(approxEqual(loess0.predictions(0),
+    assert(isClose(loess0.predictions(0),
         [3.378961, 4.004174, 4.564274, 4.863105, 5.713689, 5.564274, 2.863105,
          1.845369]
     ));
@@ -1991,7 +1991,7 @@ unittest {
     // when this happens.)  It's not clear which is right but the differences
     // are small and not practically important.
     auto loess2 = loess1D(y, x, 0.75, 2);
-    assert(approxEqual(loess2.predictions(0)[0..$ - 1],
+    assert(isClose(loess2.predictions(0)[0..$ - 1],
         [2.4029984, 4.1021339, 4.8288941, 4.5523535, 6.0000000, 6.4476465,
          3.7669741]
     ));
@@ -2863,5 +2863,5 @@ unittest {
         ans2 += a[i] * b[i] * c[i];
     }
 
-    assert(approxEqual(ans1, ans2));
+    assert(isClose(ans1, ans2));
 }

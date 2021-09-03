@@ -213,11 +213,11 @@ private PrincipalComponent firstComponentImpl(Ror)(
               buf.rotation[0..rowLen] : new double[rowLen];
     p[] = 1;
 
-    bool approxEqualOrNotFinite(const double[] a, const double[] b) {
+    bool isCloseOrNotFinite(const double[] a, const double[] b) {
         foreach(i; 0..a.length) {
             if(!isFinite(a[i]) || !isFinite(b[i])) {
                 return true;
-            } else if(!approxEqual(a[i], b[i], opts.relError, opts.absError)) {
+            } else if(!isClose(a[i], b[i], opts.relError, opts.absError)) {
                 return false;
             }
         }
@@ -274,7 +274,7 @@ private PrincipalComponent firstComponentImpl(Ror)(
         immutable tMagnitude = magnitude(t);
         t[] /= tMagnitude;
 
-        if(approxEqualOrNotFinite(t, p)) {
+        if(isCloseOrNotFinite(t, p)) {
             p[] = t[];
             break;
         }
@@ -492,7 +492,7 @@ version(unittest) {
     // There are two equally valid answers for PCA that differ only by sign.
     // This tests whether one of them matches the test value.
     bool plusMinusAe(T, U)(T lhs, U rhs) {
-        return approxEqual(lhs, rhs) || approxEqual(lhs, map!"-a"(rhs));
+        return isClose(lhs, rhs) || isClose(lhs, map!"-a"(rhs));
     }
 }
 
