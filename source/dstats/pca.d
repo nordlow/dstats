@@ -46,7 +46,7 @@ import std.range, dstats.base, dstats.alloc, std.numeric, std.stdio, std.math,
     std.exception, dstats.regress, std.traits;
 
 version(unittest) {
-    version(GDC)
+    static if (__VERSION__ < 2096)
         alias approxEqual = std.math.approxEqual;
     else
         bool approxEqual(T, U, V)(T lhs, U rhs, V maxRelDiff = 1e-2, V maxAbsDiff = 1e-5)

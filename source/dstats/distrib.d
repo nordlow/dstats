@@ -118,10 +118,10 @@ enum SQ2PI = 2.50662827463100050241576528481104525300698674060993831662992;
 version(unittest) {
     import std.stdio, std.random;
 
-    version(GDC)
+    static if (__VERSION__ < 2096)
         alias approxEqual = std.math.approxEqual;
     else
-        bool approxEqual(T, U)(T lhs, U rhs)
+        bool approxEqual(T, U, V)(T lhs, U rhs, V maxRelDiff = 1e-2, V maxAbsDiff = 1e-5)
         {
             return std.math.isClose(lhs, rhs, 1e-2, 1e-5); // mimic old sloppy approxEqual for now
         }

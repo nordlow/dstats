@@ -41,7 +41,7 @@ import  dstats.alloc, dstats.base, dstats.summary;
 version(unittest) {
     import dstats.random, std.stdio;
 
-    version(GDC)
+    static if (__VERSION__ < 2096)
         alias approxEqual = std.math.approxEqual;
     else
         bool approxEqual(T, U, V)(T lhs, U rhs, V maxRelDiff = 1e-2, V maxAbsDiff = 1e-5)
