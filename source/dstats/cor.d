@@ -1230,8 +1230,8 @@ private void pearsonSpearmanCov(bool makeNewMatrix, RoR, Matrix)
             break;
         case CorCovType.spearman:
             foreach(row; pool.parallel(normalized)) {
-                auto alloc = newRegionAllocator();
-                auto buf = alloc.uninitializedArray!(double[])(row.length);
+                auto alloc2 = newRegionAllocator();
+                auto buf = alloc2.uninitializedArray!(double[])(row.length);
                 rank(row, buf);
 
                 // Need to find mean, stdev separately for every row b/c
