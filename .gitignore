@@ -2,3 +2,4 @@
 dub.selections.json
 __*
 *.exe
+dstats-test-library
