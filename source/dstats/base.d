@@ -59,6 +59,11 @@ version(unittest)
 {
     static assert(nDims!(uint[]) == 1);
     static assert(nDims!(float[][]) == 2);
+
+    version(GDC)
+        alias approxEqual = std.math.approxEqual;
+    else
+        alias approxEqual = std.math.isClose;
 }
 
 import std.string : strip;
@@ -811,8 +816,8 @@ unittest {
     // Values worked out by hand on paper.  If you don't believe me, work
     // them out yourself.
     assert(auroc([4,5,6], [1,2,3]) == 1);
-    assert(isClose(auroc([8,6,7,5,3,0,9], [3,6,2,4,3,6]), 0.690476190));
-    assert(isClose(auroc([2,7,1,8,2,8,1,8], [3,1,4,1,5,9,2,6]), 0.546875));
+    assert(approxEqual(auroc([8,6,7,5,3,0,9], [3,6,2,4,3,6]), 0.690476190));
+    assert(approxEqual(auroc([2,7,1,8,2,8,1,8], [3,1,4,1,5,9,2,6]), 0.546875));
 }
 
 ///
@@ -848,8 +853,8 @@ unittest {
     assert(cast(uint) round(exp(logFactorial(7)))==5040);
     assert(cast(uint) round(exp(logFactorial(3)))==6);
     // Gamma branch.
-    assert(isClose(logFactorial(12000), 1.007175584216837e5, 1e-14));
-    assert(isClose(logFactorial(14000), 1.196610688711534e5, 1e-14));
+    assert(approxEqual(logFactorial(12000), 1.007175584216837e5, 1e-14));
+    assert(approxEqual(logFactorial(14000), 1.196610688711534e5, 1e-14));
 }
 
 ///Log of (n choose k).
@@ -1481,13 +1486,13 @@ unittest {
         scope(exit) std.file.remove("NumericFileTestDeleteMe.txt");
         auto myFile = File("NumericFileTestDeleteMe.txt");
         auto rng = toNumericRange(myFile.byLine());
-        assert(isClose(rng.front, 3.14));
+        assert(approxEqual(rng.front, 3.14));
         rng.popFront;
-        assert(isClose(rng.front, 2.71));
+        assert(approxEqual(rng.front, 2.71));
         rng.popFront;
-        assert(isClose(rng.front, 8.67));
+        assert(approxEqual(rng.front, 8.67));
         rng.popFront;
-        assert(isClose(rng.front, 362436));
+        assert(approxEqual(rng.front, 362436));
         assert(!rng.empty);
         rng.popFront;
         assert(rng.empty);
@@ -1622,9 +1627,9 @@ version(scid) {
         auto mat = [[1.0, 2, 3], [4.0, 7, 6], [7.0, 8, 9]];
         auto toMat = [new double[3], new double[3], new double[3]];
         invert(mat, toMat);
-        assert(isClose(toMat[0], [-0.625, -0.25, 0.375]));
-        assert(isClose(toMat[1], [-0.25, 0.5, -0.25]));
-        assert(isClose(toMat[2], [0.70833333333, -0.25000000000, 0.04166666667]));
+        assert(approxEqual(toMat[0], [-0.625, -0.25, 0.375]));
+        assert(approxEqual(toMat[1], [-0.25, 0.5, -0.25]));
+        assert(approxEqual(toMat[2], [0.70833333333, -0.25000000000, 0.04166666667]));
     }
 
     void solve(DoubleMatrix mat, double[] vec) {
@@ -1685,12 +1690,12 @@ version(scid) {
         auto mat = [[2.0, 1, -1], [-3.0, -1, 2], [-2.0, 1, 2]];
         auto vec = [8.0, -11, -3];
         solve(mat, vec);
-        assert(isClose(vec, [2, 3, -1]));
+        assert(approxEqual(vec, [2, 3, -1]));
 
         auto mat2 = [[1.0, 2, 3], [4.0, 7, 6], [7.0, 8, 9]];
         auto vec2 = [8.0, 6, 7];
         solve(mat2, vec2);
-        assert(isClose(vec2, [-3.875, -0.75, 4.45833333333]));
+        assert(approxEqual(vec2, [-3.875, -0.75, 4.45833333333]));
     }
 
     // Cholesky decomposition functions adapted from Don Clugston's MathExtra

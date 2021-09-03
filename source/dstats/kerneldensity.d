@@ -40,6 +40,11 @@ import  dstats.alloc, dstats.base, dstats.summary;
 
 version(unittest) {
     import dstats.random, std.stdio;
+
+    version(GDC)
+        alias approxEqual = std.math.approxEqual;
+    else
+        alias approxEqual = std.math.isClose;
 }
 
 /**Estimates densities in the 1-dimensional case.  The 1-D case is special
@@ -306,9 +311,9 @@ public:
 
 unittest {
     auto kde = KernelDensity1D.fromCallable(parametrize!normalPDF(0, 1), [0]);
-    assert(isClose(kde(1), normalPDF(1)));
-    assert(isClose(kde.cdf(1), normalCDF(1)));
-    assert(isClose(kde.cdfr(1), normalCDFR(1)));
+    assert(approxEqual(kde(1), normalPDF(1)));
+    assert(approxEqual(kde.cdf(1), normalCDF(1)));
+    assert(approxEqual(kde.cdfr(1), normalCDFR(1)));
 
     // This is purely to see if fromAlias works.
     auto cosKde = KernelDensity1D.fromAlias!cos([0], 1);
@@ -344,8 +349,8 @@ if(isForwardRange!R && is(ElementType!R : double)) {
 
 unittest {
     // Values from R.
-    assert(isClose(scottBandwidth([1,2,3,4,5]), 1.14666));
-    assert(isClose(scottBandwidth([1,2,2,2,2,8,8,8,8]), 2.242446));
+    assert(approxEqual(scottBandwidth([1,2,3,4,5]), 1.14666));
+    assert(approxEqual(scottBandwidth([1,2,2,2,2,8,8,8,8]), 2.242446));
 }
 
 /**Construct an N-dimensional kernel density estimator.  This is done using

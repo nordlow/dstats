@@ -43,6 +43,11 @@ private static import dstats.infotheory;
 
 version(unittest) {
     import std.stdio, dstats.random;
+
+    version(GDC)
+        alias approxEqual = std.math.approxEqual;
+    else
+        alias approxEqual = std.math.isClose;
 }
 
 /**Alternative hypotheses.  Exact meaning varies with test used.*/
@@ -167,22 +172,22 @@ ConfInt studentsTTest(T)(
 
 unittest {
     auto t1 = studentsTTest([1, 2, 3, 4, 5].dup, 2);
-    assert(isClose(t1.testStat, 1.4142));
-    assert(isClose(t1.p, 0.2302));
-    assert(isClose(t1.lowerBound, 1.036757));
-    assert(isClose(t1.upperBound, 4.963243));
+    assert(approxEqual(t1.testStat, 1.4142));
+    assert(approxEqual(t1.p, 0.2302));
+    assert(approxEqual(t1.lowerBound, 1.036757));
+    assert(approxEqual(t1.upperBound, 4.963243));
     assert(t1 == studentsTTest( meanStdev([1,2,3,4,5].dup), 2));
 
     auto t2 = studentsTTest([1, 2, 3, 4, 5].dup, 2, Alt.less);
-    assert(isClose(t2.p, .8849));
-    assert(isClose(t2.testStat, 1.4142));
+    assert(approxEqual(t2.p, .8849));
+    assert(approxEqual(t2.testStat, 1.4142));
     assert(t2.lowerBound == -double.infinity);
-    assert(isClose(t2.upperBound, 4.507443));
+    assert(approxEqual(t2.upperBound, 4.507443));
 
     auto t3 = studentsTTest( summary([1, 2, 3, 4, 5].dup), 2, Alt.greater);
-    assert(isClose(t3.p, .1151));
-    assert(isClose(t3.testStat, 1.4142));
-    assert(isClose(t3.lowerBound, 1.492557));
+    assert(approxEqual(t3.p, .1151));
+    assert(approxEqual(t3.testStat, 1.4142));
+    assert(approxEqual(t3.lowerBound, 1.492557));
     assert(t3.upperBound == double.infinity);
 }
 
@@ -280,40 +285,40 @@ ConfInt studentsTTest(T, U)(
 unittest {
     // Values from R.
     auto t1 = studentsTTest([1,2,3,4,5], [1,3,4,5,7,9]);
-    assert(isClose(t1.p, 0.2346));
-    assert(isClose(t1.testStat, -1.274));
-    assert(isClose(t1.lowerBound, -5.088787));
-    assert(isClose(t1.upperBound, 1.422120));
+    assert(approxEqual(t1.p, 0.2346));
+    assert(approxEqual(t1.testStat, -1.274));
+    assert(approxEqual(t1.lowerBound, -5.088787));
+    assert(approxEqual(t1.upperBound, 1.422120));
 
 
-    assert(isClose(studentsTTest([1,2,3,4,5], [1,3,4,5,7,9], 0, Alt.less),
+    assert(approxEqual(studentsTTest([1,2,3,4,5], [1,3,4,5,7,9], 0, Alt.less),
            0.1173));
-    assert(isClose(studentsTTest([1,2,3,4,5], [1,3,4,5,7,9], 0, Alt.greater),
+    assert(approxEqual(studentsTTest([1,2,3,4,5], [1,3,4,5,7,9], 0, Alt.greater),
            0.8827));
     auto t2 = studentsTTest([1,3,5,7,9,11], [2,2,1,3,4], 5);
-    assert(isClose(t2.p, 0.44444));
-    assert(isClose(t2.testStat, -0.7998));
-    assert(isClose(t2.lowerBound, -0.3595529));
-    assert(isClose(t2.upperBound, 7.5595529));
+    assert(approxEqual(t2.p, 0.44444));
+    assert(approxEqual(t2.testStat, -0.7998));
+    assert(approxEqual(t2.lowerBound, -0.3595529));
+    assert(approxEqual(t2.upperBound, 7.5595529));
 
 
     auto t5 = studentsTTest([1,3,5,7,9,11], [2,2,1,3,4], 0, Alt.less);
-    assert(isClose(t5.p, 0.965));
-    assert(isClose(t5.testStat, 2.0567));
-    assert(isClose(t5.upperBound, 6.80857));
+    assert(approxEqual(t5.p, 0.965));
+    assert(approxEqual(t5.testStat, 2.0567));
+    assert(approxEqual(t5.upperBound, 6.80857));
     assert(t5.lowerBound == -double.infinity);
 
     auto t6 = studentsTTest([1,3,5,7,9,11], [2,2,1,3,4], 0, Alt.greater);
-    assert(isClose(t6.p, 0.03492));
-    assert(isClose(t6.testStat, 2.0567));
-    assert(isClose(t6.lowerBound, 0.391422));
+    assert(approxEqual(t6.p, 0.03492));
+    assert(approxEqual(t6.testStat, 2.0567));
+    assert(approxEqual(t6.lowerBound, 0.391422));
     assert(t6.upperBound == double.infinity);
 
     auto t7 = studentsTTest([1, 2, 4], [3]);
-    assert(isClose(t7.p, 0.7418));
-    assert(isClose(t7.testStat, 0.-.378));
-    assert(isClose(t7.lowerBound, -8.255833));
-    assert(isClose(t7.upperBound, 6.922499));
+    assert(approxEqual(t7.p, 0.7418));
+    assert(approxEqual(t7.testStat, 0.-.378));
+    assert(approxEqual(t7.lowerBound, -8.255833));
+    assert(approxEqual(t7.upperBound, 6.922499));
 
 }
 
@@ -411,27 +416,27 @@ if( (isSummary!T || doubleIterable!T) && (isSummary!U || doubleIterable!U)) {
 unittest {
     // Values from R.
     auto t1 = welchTTest( meanStdev([1,2,3,4,5]), [1,3,4,5,7,9], 2);
-    assert(isClose(t1.p, 0.02285));
-    assert(isClose(t1.testStat, -2.8099));
-    assert(isClose(t1.lowerBound, -4.979316));
-    assert(isClose(t1.upperBound, 1.312649));
+    assert(approxEqual(t1.p, 0.02285));
+    assert(approxEqual(t1.testStat, -2.8099));
+    assert(approxEqual(t1.lowerBound, -4.979316));
+    assert(approxEqual(t1.upperBound, 1.312649));
 
     auto t2 = welchTTest([1,2,3,4,5], summary([1,3,4,5,7,9]), -1, Alt.less);
-    assert(isClose(t2.p, 0.2791));
-    assert(isClose(t2.testStat, -0.6108));
+    assert(approxEqual(t2.p, 0.2791));
+    assert(approxEqual(t2.testStat, -0.6108));
     assert(t2.lowerBound == -double.infinity);
-    assert(isClose(t2.upperBound, 0.7035534));
+    assert(approxEqual(t2.upperBound, 0.7035534));
 
     auto t3 = welchTTest([1,2,3,4,5], [1,3,4,5,7,9], 0.5, Alt.greater);
-    assert(isClose(t3.p, 0.9372));
-    assert(isClose(t3.testStat, -1.7104));
-    assert(isClose(t3.lowerBound, -4.37022));
+    assert(approxEqual(t3.p, 0.9372));
+    assert(approxEqual(t3.testStat, -1.7104));
+    assert(approxEqual(t3.lowerBound, -4.37022));
     assert(t3.upperBound == double.infinity);
 
-    assert(isClose(welchTTest([1,3,5,7,9,11], [2,2,1,3,4]).p, 0.06616));
-    assert(isClose(welchTTest([1,3,5,7,9,11], [2,2,1,3,4], 0,
+    assert(approxEqual(welchTTest([1,3,5,7,9,11], [2,2,1,3,4]).p, 0.06616));
+    assert(approxEqual(welchTTest([1,3,5,7,9,11], [2,2,1,3,4], 0,
         Alt.less).p, 0.967));
-    assert(isClose(welchTTest([1,3,5,7,9,11], [2,2,1,3,4], 0,
+    assert(approxEqual(welchTTest([1,3,5,7,9,11], [2,2,1,3,4], 0,
         Alt.greater).p, 0.03308));
 }
 
@@ -570,16 +575,16 @@ ConfInt pairedTTest(T)(
 unittest {
     // Values from R.
     auto t1 = pairedTTest([3,2,3,4,5], [2,3,5,5,6], 1);
-    assert(isClose(t1.p, 0.02131));
-    assert(isClose(t1.testStat, -3.6742));
-    assert(isClose(t1.lowerBound, -2.1601748));
-    assert(isClose(t1.upperBound, 0.561748));
+    assert(approxEqual(t1.p, 0.02131));
+    assert(approxEqual(t1.testStat, -3.6742));
+    assert(approxEqual(t1.lowerBound, -2.1601748));
+    assert(approxEqual(t1.upperBound, 0.561748));
 
-    assert(isClose(pairedTTest([3,2,3,4,5], [2,3,5,5,6], 0, Alt.less).p, 0.0889));
-    assert(isClose(pairedTTest([3,2,3,4,5], [2,3,5,5,6], 0, Alt.greater).p, 0.9111));
-    assert(isClose(pairedTTest([3,2,3,4,5], [2,3,5,5,6], 0, Alt.twoSided).p, 0.1778));
-    assert(isClose(pairedTTest([3,2,3,4,5], [2,3,5,5,6], 1, Alt.less).p, 0.01066));
-    assert(isClose(pairedTTest([3,2,3,4,5], [2,3,5,5,6], 1, Alt.greater).p, 0.9893));
+    assert(approxEqual(pairedTTest([3,2,3,4,5], [2,3,5,5,6], 0, Alt.less).p, 0.0889));
+    assert(approxEqual(pairedTTest([3,2,3,4,5], [2,3,5,5,6], 0, Alt.greater).p, 0.9111));
+    assert(approxEqual(pairedTTest([3,2,3,4,5], [2,3,5,5,6], 0, Alt.twoSided).p, 0.1778));
+    assert(approxEqual(pairedTTest([3,2,3,4,5], [2,3,5,5,6], 1, Alt.less).p, 0.01066));
+    assert(approxEqual(pairedTTest([3,2,3,4,5], [2,3,5,5,6], 1, Alt.greater).p, 0.9893));
 }
 
 /**
@@ -603,8 +608,8 @@ int[] sample2 = [100,200,300,400,500];
 auto result = levenesTest(sample1, sample2);
 
 // Clearly the variances are different between these two samples.
-assert( isClose(result.testStat, 10.08));
-assert( isClose(result.p, 0.01310));
+assert( approxEqual(result.testStat, 10.08));
+assert( approxEqual(result.p, 0.01310));
 ---
 */
 TestRes levenesTest(alias central = median, T...)(T data) {
@@ -615,16 +620,16 @@ unittest {
     // Values from R's car package, which uses the median definition
     // exclusively.
     auto res1 = levenesTest([1,2,3,4,5][], [2,4,8,16,32][]);
-    assert(isClose(res1.testStat, 3.0316));
-    assert(isClose(res1.p, 0.1198), res1.toString());
+    assert(approxEqual(res1.testStat, 3.0316));
+    assert(approxEqual(res1.p, 0.1198), res1.toString());
 
     auto res2 = levenesTest([[1,2,3,4,5][], [100,200,300,400,500,600][]][]);
-    assert(isClose(res2.testStat, 13.586));
-    assert(isClose(res2.p, 0.005029));
+    assert(approxEqual(res2.testStat, 13.586));
+    assert(approxEqual(res2.p, 0.005029));
 
     auto res3 = levenesTest([8,6,7,5,3,0,9][], [3,6,2,4,3,6][]);
-    assert(isClose(res3.testStat, 1.1406));
-    assert(isClose(res3.p, 0.3084));
+    assert(approxEqual(res3.testStat, 1.1406));
+    assert(approxEqual(res3.p, 0.3084));
 }
 
 /**
@@ -644,8 +649,8 @@ uint[] thing1 = [3,1,4,1],
        thing2 = [5,9,2,6,5,3],
        thing3 = [5,8,9,7,9,3];
 auto result = fTest(thing1, meanStdev(thing2), summary(thing3));
-assert(isClose(result.testStat, 4.9968));
-assert(isClose(result.p, 0.02456));
+assert(approxEqual(result.testStat, 4.9968));
+assert(approxEqual(result.p, 0.02456));
 ---
 
 References:  http://en.wikipedia.org/wiki/F-test
@@ -679,36 +684,36 @@ unittest {
            thing2 = [5,9,2,6,5,3],
            thing3 = [5,8,9,7,9,3];
     auto result = fTest(thing1, meanStdev(thing2), summary(thing3));
-    assert(isClose(result.testStat, 4.9968));
-    assert(isClose(result.p, 0.02456));
+    assert(approxEqual(result.testStat, 4.9968));
+    assert(approxEqual(result.p, 0.02456));
 
     auto welchRes1 = welchAnova(thing1, thing2, thing3);
-    assert( isClose(welchRes1.testStat, 6.7813));
-    assert( isClose(welchRes1.p, 0.01706));
+    assert( approxEqual(welchRes1.testStat, 6.7813));
+    assert( approxEqual(welchRes1.p, 0.01706));
 
     // Test array case.
     auto res2 = fTest([thing1, thing2, thing3].dup);
-    assert(isClose(result.testStat, res2.testStat));
-    assert(isClose(result.p, res2.p));
+    assert(approxEqual(result.testStat, res2.testStat));
+    assert(approxEqual(result.p, res2.p));
 
     thing1 = [2,7,1,8,2];
     thing2 = [8,1,8];
     thing3 = [2,8,4,5,9];
     auto res3 = fTest(thing1, thing2, thing3);
-    assert(isClose(res3.testStat, 0.377));
-    assert(isClose(res3.p, 0.6953));
+    assert(approxEqual(res3.testStat, 0.377));
+    assert(approxEqual(res3.p, 0.6953));
 
     auto res4 = fTest([summary(thing1), summary(thing2), summary(thing3)][]);
-    assert(isClose(res4.testStat, res3.testStat));
-    assert(isClose(res4.testStat, res3.testStat));
+    assert(approxEqual(res4.testStat, res3.testStat));
+    assert(approxEqual(res4.testStat, res3.testStat));
 
     auto welchRes2 = welchAnova(summary(thing1), thing2, thing3);
-    assert( isClose(welchRes2.testStat, 0.342));
-    assert( isClose(welchRes2.p, 0.7257));
+    assert( approxEqual(welchRes2.testStat, 0.342));
+    assert( approxEqual(welchRes2.p, 0.7257));
 
     auto res5 = fTest([1, 2, 4], [3]);
-    assert(isClose(res5.testStat, 0.1429));
-    assert(isClose(res5.p, 0.7418));
+    assert(approxEqual(res5.testStat, 0.1429));
+    assert(approxEqual(res5.p, 0.7418));
 }
 
 // Levene's Test, Welch ANOVA and F test have massive overlap at the
@@ -935,7 +940,7 @@ if(allSatisfy!(isInputRange, T)) {
 unittest {
     // Values from VassarStats utility at
     // http://faculty.vassar.edu/lowry/VassarStats.html, but they like to
-    // round a lot, so the isClose tolerances are fairly wide.  I
+    // round a lot, so the approxEqual tolerances are fairly wide.  I
     // think it's adequate to demonstrate the correctness of this function,
     // though.
     uint[] alcohol = [8,6,7,5,3,0,9];
@@ -943,14 +948,14 @@ unittest {
     uint[] noSleep = [3,1,4,1,5,9,2];
     uint[] loudMusic = [2,7,1,8,2,8,1];
     auto result = correlatedAnova(alcohol, caffeine, noSleep, loudMusic);
-    assert(isClose(result.testStat, 0.43, 0.0, 0.01));
-    assert(isClose(result.p, 0.734, 0.0, 0.01));
+    assert(approxEqual(result.testStat, 0.43, 0.0, 0.01));
+    assert(approxEqual(result.p, 0.734, 0.0, 0.01));
 
     uint[] stuff1 = [3,4,2,6];
     uint[] stuff2 = [4,1,9,8];
     auto result2 = correlatedAnova([stuff1, stuff2].dup);
-    assert(isClose(result2.testStat, 0.72, 0.0, 0.01));
-    assert(isClose(result2.p, 0.4584, 0.0, 0.01));
+    assert(approxEqual(result2.testStat, 0.72, 0.0, 0.01));
+    assert(approxEqual(result2.p, 0.4584, 0.0, 0.01));
 }
 
 /**The Kruskal-Wallis rank sum test.  Tests the null hypothesis that data in
@@ -1083,8 +1088,8 @@ unittest {
     // R is actually wrong here because it apparently doesn't use a correction
     // for ties.
     auto res1 = kruskalWallis([3,1,4,1].idup, [5,9,2,6].dup, [5,3,5].dup);
-    assert(isClose(res1.testStat, 4.15));
-    assert(isClose(res1.p, 0.1256));
+    assert(approxEqual(res1.testStat, 4.15));
+    assert(approxEqual(res1.p, 0.1256));
 
     // Test for other input types.
     auto res2 = kruskalWallis([[3,1,4,1].idup, [5,9,2,6].idup, [5,3,5].idup].dup);
@@ -1099,8 +1104,8 @@ unittest {
     // Test w/ one more case, just with one input type.
     auto res5 = kruskalWallis([2,7,1,8,2].dup, [8,1,8,2].dup, [8,4,5,9,2].dup,
                               [7,1,8,2,8,1,8].dup);
-    assert(isClose(res5.testStat, 1.06));
-    assert(isClose(res5.p, 0.7867));
+    assert(approxEqual(res5.testStat, 1.06));
+    assert(approxEqual(res5.p, 0.7867));
 }
 
 /**The Friedman test is a non-parametric within-subject ANOVA.  It's useful
@@ -1180,14 +1185,14 @@ unittest {
     uint[] noSleep = [3,1,4,1,5,9,2];
     uint[] loudMusic = [2,7,1,8,2,8,1];
     auto result = friedmanTest(alcohol, caffeine, noSleep, loudMusic);
-    assert(isClose(result.testStat, 1.7463));
-    assert(isClose(result.p, 0.6267));
+    assert(approxEqual(result.testStat, 1.7463));
+    assert(approxEqual(result.p, 0.6267));
 
     uint[] stuff1 = [3,4,2,6];
     uint[] stuff2 = [4,1,9,8];
     auto result2 = friedmanTest([stuff1, stuff2].dup);
-    assert(isClose(result2.testStat, 1));
-    assert(isClose(result2.p, 0.3173));
+    assert(approxEqual(result2.testStat, 1));
+    assert(approxEqual(result2.p, 0.3173));
 }
 
 /**Computes Wilcoxon rank sum test statistic and P-value for
@@ -1299,57 +1304,57 @@ is(CommonType!(ElementType!T, ElementType!U))) {
 
      // Simple stuff (no ties) first.  Testing approximate
      // calculation first.
-     assert(isClose(wilcoxonRankSum([2,4,6,8,12].dup, [1,3,5,7,11,9].dup,
+     assert(approxEqual(wilcoxonRankSum([2,4,6,8,12].dup, [1,3,5,7,11,9].dup,
            Alt.twoSided, 0), 0.9273));
-     assert(isClose(wilcoxonRankSum([2,4,6,8,12].dup, [1,3,5,7,11,9].dup,
+     assert(approxEqual(wilcoxonRankSum([2,4,6,8,12].dup, [1,3,5,7,11,9].dup,
            Alt.less, 0), 0.6079));
-     assert(isClose(wilcoxonRankSum([2,4,6,8,12].dup, [1,3,5,7,11,9].dup,
+     assert(approxEqual(wilcoxonRankSum([2,4,6,8,12].dup, [1,3,5,7,11,9].dup,
            Alt.greater, 0).p, 0.4636));
-     assert(isClose(wilcoxonRankSum([1,2,6,10,12].dup, [3,5,7,8,13,15].dup,
+     assert(approxEqual(wilcoxonRankSum([1,2,6,10,12].dup, [3,5,7,8,13,15].dup,
             Alt.twoSided, 0).p, 0.4113));
-     assert(isClose(wilcoxonRankSum([1,2,6,10,12].dup, [3,5,7,8,13,15].dup,
+     assert(approxEqual(wilcoxonRankSum([1,2,6,10,12].dup, [3,5,7,8,13,15].dup,
             Alt.less, 0).p, 0.2057));
-     assert(isClose(wilcoxonRankSum([1,2,6,10,12].dup,
+     assert(approxEqual(wilcoxonRankSum([1,2,6,10,12].dup,
         map!"a"([3,5,7,8,13,15].dup), Alt.greater, 0).p, 0.8423));
-     assert(isClose(wilcoxonRankSum([1,3,5,7,9].dup, [2,4,6,8,10].dup,
+     assert(approxEqual(wilcoxonRankSum([1,3,5,7,9].dup, [2,4,6,8,10].dup,
             Alt.twoSided, 0), .6745));
-     assert(isClose(wilcoxonRankSum([1,3,5,7,9].dup, [2,4,6,8,10].dup,
+     assert(approxEqual(wilcoxonRankSum([1,3,5,7,9].dup, [2,4,6,8,10].dup,
             Alt.less, 0), .3372));
-     assert(isClose(wilcoxonRankSum([1,3,5,7,9].dup, [2,4,6,8,10].dup,
+     assert(approxEqual(wilcoxonRankSum([1,3,5,7,9].dup, [2,4,6,8,10].dup,
             Alt.greater, 0), .7346));
 
     // Now, lots of ties.
-    assert(isClose(wilcoxonRankSum([1,2,3,4,5].dup, [2,3,4,5,6].dup,
+    assert(approxEqual(wilcoxonRankSum([1,2,3,4,5].dup, [2,3,4,5,6].dup,
            Alt.twoSided, 0), 0.3976));
-    assert(isClose(wilcoxonRankSum([1,2,3,4,5].dup, [2,3,4,5,6].dup,
+    assert(approxEqual(wilcoxonRankSum([1,2,3,4,5].dup, [2,3,4,5,6].dup,
            Alt.less, 0), 0.1988));
-    assert(isClose(wilcoxonRankSum([1,2,3,4,5].dup, [2,3,4,5,6].dup,
+    assert(approxEqual(wilcoxonRankSum([1,2,3,4,5].dup, [2,3,4,5,6].dup,
            Alt.greater, 0), 0.8548));
-    assert(isClose(wilcoxonRankSum([1,2,1,1,2].dup, [1,2,3,1,1].dup,
+    assert(approxEqual(wilcoxonRankSum([1,2,1,1,2].dup, [1,2,3,1,1].dup,
            Alt.twoSided, 0), 0.9049));
-    assert(isClose(wilcoxonRankSum([1,2,1,1,2].dup, [1,2,3,1,1].dup,
+    assert(approxEqual(wilcoxonRankSum([1,2,1,1,2].dup, [1,2,3,1,1].dup,
            Alt.less, 0), 0.4524));
-    assert(isClose(wilcoxonRankSum([1,2,1,1,2].dup, [1,2,3,1,1].dup,
+    assert(approxEqual(wilcoxonRankSum([1,2,1,1,2].dup, [1,2,3,1,1].dup,
            Alt.greater, 0), 0.64));
 
     // Now, testing the exact calculation on the same data.
-     assert(isClose(wilcoxonRankSum([2,4,6,8,12].dup, [1,3,5,7,11,9].dup,
+     assert(approxEqual(wilcoxonRankSum([2,4,6,8,12].dup, [1,3,5,7,11,9].dup,
        Alt.twoSided), 0.9307));
-     assert(isClose(wilcoxonRankSum([2,4,6,8,12].dup, [1,3,5,7,11,9].dup,
+     assert(approxEqual(wilcoxonRankSum([2,4,6,8,12].dup, [1,3,5,7,11,9].dup,
            Alt.less), 0.6039));
-     assert(isClose(wilcoxonRankSum([2,4,6,8,12].dup, [1,3,5,7,11,9].dup,
+     assert(approxEqual(wilcoxonRankSum([2,4,6,8,12].dup, [1,3,5,7,11,9].dup,
            Alt.greater), 0.4654));
-     assert(isClose(wilcoxonRankSum([1,2,6,10,12].dup, [3,5,7,8,13,15].dup,
+     assert(approxEqual(wilcoxonRankSum([1,2,6,10,12].dup, [3,5,7,8,13,15].dup,
             Alt.twoSided), 0.4286));
-     assert(isClose(wilcoxonRankSum([1,2,6,10,12].dup, [3,5,7,8,13,15].dup,
+     assert(approxEqual(wilcoxonRankSum([1,2,6,10,12].dup, [3,5,7,8,13,15].dup,
             Alt.less), 0.2143));
-     assert(isClose(wilcoxonRankSum([1,2,6,10,12].dup, [3,5,7,8,13,15].dup,
+     assert(approxEqual(wilcoxonRankSum([1,2,6,10,12].dup, [3,5,7,8,13,15].dup,
             Alt.greater), 0.8355));
-     assert(isClose(wilcoxonRankSum([1,3,5,7,9].dup, [2,4,6,8,10].dup,
+     assert(approxEqual(wilcoxonRankSum([1,3,5,7,9].dup, [2,4,6,8,10].dup,
             Alt.twoSided), .6905));
-     assert(isClose(wilcoxonRankSum([1,3,5,7,9].dup, [2,4,6,8,10].dup,
+     assert(approxEqual(wilcoxonRankSum([1,3,5,7,9].dup, [2,4,6,8,10].dup,
             Alt.less), .3452));
-     assert(isClose(wilcoxonRankSum([1,3,5,7,9].dup, [2,4,6,8,10].dup,
+     assert(approxEqual(wilcoxonRankSum([1,3,5,7,9].dup, [2,4,6,8,10].dup,
             Alt.greater), .7262));
 }
 
@@ -1397,13 +1402,13 @@ double wilcoxonRankSumPval(double w, ulong n1, ulong n2, Alt alt = Alt.twoSided,
 unittest {
     /* Values from R.  I could only get good values for Alt.less directly.
      * Using W-values to test Alt.twoSided, Alt.greater indirectly.*/
-    assert(isClose(wilcoxonRankSumPval(1200, 50, 50, Alt.less), .3670));
-    assert(isClose(wilcoxonRankSumPval(1500, 50, 50, Alt.less), .957903));
-    assert(isClose(wilcoxonRankSumPval(8500, 100, 200, Alt.less), .01704));
+    assert(approxEqual(wilcoxonRankSumPval(1200, 50, 50, Alt.less), .3670));
+    assert(approxEqual(wilcoxonRankSumPval(1500, 50, 50, Alt.less), .957903));
+    assert(approxEqual(wilcoxonRankSumPval(8500, 100, 200, Alt.less), .01704));
     auto w = wilcoxonRankSum([2,4,6,8,12].dup, [1,3,5,7,11,9].dup).testStat;
-    assert(isClose(wilcoxonRankSumPval(w, 5, 6), 0.9273));
-    assert(isClose(wilcoxonRankSumPval(w, 5, 6, Alt.greater), 0.4636));
-    assert(isClose(wilcoxonRankSumPval(w, 5, 6, Alt.less), 0.6079));
+    assert(approxEqual(wilcoxonRankSumPval(w, 5, 6), 0.9273));
+    assert(approxEqual(wilcoxonRankSumPval(w, 5, 6, Alt.greater), 0.4636));
+    assert(approxEqual(wilcoxonRankSumPval(w, 5, 6, Alt.less), 0.6079));
 
     // Monte carlo unit testing:  Make sure that the exact and asymptotic
     // versions agree within a small epsilon;
@@ -1523,18 +1528,18 @@ private double wilcoxRSPExact(uint W, uint n1, uint n2, Alt alt = Alt.twoSided) 
 
 unittest {
     // Values from R.
-    assert(isClose(wilcoxRSPExact(14, 5, 6), 0.9307));
-    assert(isClose(wilcoxRSPExact(14, 5, 6, Alt.less), 0.4654));
-    assert(isClose(wilcoxRSPExact(14, 5, 6, Alt.greater), 0.6039));
-    assert(isClose(wilcoxRSPExact(16, 6, 5), 0.9307));
-    assert(isClose(wilcoxRSPExact(16, 6, 5, Alt.less), 0.6039));
-    assert(isClose(wilcoxRSPExact(16, 6, 5, Alt.greater), 0.4654));
-    assert(isClose(wilcoxRSPExact(66, 10, 35, Alt.less), 0.001053));
-    assert(isClose(wilcoxRSPExact(78, 13, 6, Alt.less), 1));
+    assert(approxEqual(wilcoxRSPExact(14, 5, 6), 0.9307));
+    assert(approxEqual(wilcoxRSPExact(14, 5, 6, Alt.less), 0.4654));
+    assert(approxEqual(wilcoxRSPExact(14, 5, 6, Alt.greater), 0.6039));
+    assert(approxEqual(wilcoxRSPExact(16, 6, 5), 0.9307));
+    assert(approxEqual(wilcoxRSPExact(16, 6, 5, Alt.less), 0.6039));
+    assert(approxEqual(wilcoxRSPExact(16, 6, 5, Alt.greater), 0.4654));
+    assert(approxEqual(wilcoxRSPExact(66, 10, 35, Alt.less), 0.001053));
+    assert(approxEqual(wilcoxRSPExact(78, 13, 6, Alt.less), 1));
 
     // Mostly to make sure that underflow doesn't happen until
     // the N's are truly unreasonable:
-    //assert(isClose(wilcoxRSPExact(6_000, 120, 120, Alt.less), 0.01276508));
+    //assert(approxEqual(wilcoxRSPExact(6_000, 120, 120, Alt.less), 0.01276508));
 }
 
 /**Computes a test statistic and P-value for a Wilcoxon signed rank test against
@@ -1668,31 +1673,30 @@ is(typeof(before.front - after.front) : double)) {
 
 unittest {
     // Values from R.
-    alias isClose ae;
     assert(wilcoxonSignedRank([1,2,3,4,5].dup, [2,1,4,5,3].dup).testStat == 7.5);
     assert(wilcoxonSignedRank([3,1,4,1,5].dup, [2,7,1,8,2].dup).testStat == 6);
     assert(wilcoxonSignedRank([8,6,7,5,3].dup, [0,9,8,6,7].dup).testStat == 5);
 
     // With ties, normal approx.
-    assert(ae(wilcoxonSignedRank([1,2,3,4,5].dup, [2,1,4,5,3].dup), 1));
-    assert(ae(wilcoxonSignedRank([3,1,4,1,5].dup, map!"a"([2,7,1,8,2].dup)), 0.7865));
-    assert(ae(wilcoxonSignedRank([8,6,7,5,3].dup, [0,9,8,6,7].dup), 0.5879));
-    assert(ae(wilcoxonSignedRank([1,2,3,4,5].dup, [2,1,4,5,3].dup, Alt.less), 0.5562));
-    assert(ae(wilcoxonSignedRank([3,1,4,1,5].dup, [2,7,1,8,2].dup, Alt.less), 0.3932));
-    assert(ae(wilcoxonSignedRank([8,6,7,5,3].dup, [0,9,8,6,7].dup, Alt.less), 0.2940));
-    assert(ae(wilcoxonSignedRank([1,2,3,4,5].dup, [2,1,4,5,3].dup, Alt.greater), 0.5562));
-    assert(ae(wilcoxonSignedRank([3,1,4,1,5].dup, [2,7,1,8,2].dup, Alt.greater), 0.706));
-    assert(ae(wilcoxonSignedRank([8,6,7,5,3].dup, [0,9,8,6,7].dup, Alt.greater), 0.7918));
-    assert(ae(wilcoxonSignedRank(cast(int[]) [1,16,2,4,8], cast(int[]) [1,5,2,3,4]).testStat, 6));
-    assert(ae(wilcoxonSignedRank(cast(int[]) [1,16,2,4,8], cast(int[]) [1,5,2,3,4]), 0.1814));
+    assert(approxEqual(wilcoxonSignedRank([1,2,3,4,5].dup, [2,1,4,5,3].dup), 1));
+    assert(approxEqual(wilcoxonSignedRank([3,1,4,1,5].dup, map!"a"([2,7,1,8,2].dup)), 0.7865));
+    assert(approxEqual(wilcoxonSignedRank([8,6,7,5,3].dup, [0,9,8,6,7].dup), 0.5879));
+    assert(approxEqual(wilcoxonSignedRank([1,2,3,4,5].dup, [2,1,4,5,3].dup, Alt.less), 0.5562));
+    assert(approxEqual(wilcoxonSignedRank([3,1,4,1,5].dup, [2,7,1,8,2].dup, Alt.less), 0.3932));
+    assert(approxEqual(wilcoxonSignedRank([8,6,7,5,3].dup, [0,9,8,6,7].dup, Alt.less), 0.2940));
+    assert(approxEqual(wilcoxonSignedRank([1,2,3,4,5].dup, [2,1,4,5,3].dup, Alt.greater), 0.5562));
+    assert(approxEqual(wilcoxonSignedRank([3,1,4,1,5].dup, [2,7,1,8,2].dup, Alt.greater), 0.706));
+    assert(approxEqual(wilcoxonSignedRank([8,6,7,5,3].dup, [0,9,8,6,7].dup, Alt.greater), 0.7918));
+    assert(approxEqual(wilcoxonSignedRank(cast(int[]) [1,16,2,4,8], cast(int[]) [1,5,2,3,4]).testStat, 6));
+    assert(approxEqual(wilcoxonSignedRank(cast(int[]) [1,16,2,4,8], cast(int[]) [1,5,2,3,4]), 0.1814));
 
     // Exact.
-    assert(ae(wilcoxonSignedRank([1,2,3,4,5].dup, [2,-4,-8,16,32].dup), 0.625));
-    assert(ae(wilcoxonSignedRank([1,2,3,4,5].dup, [2,-4,-8,16,32].dup, Alt.less), 0.3125));
-    assert(ae(wilcoxonSignedRank([1,2,3,4,5].dup, [2,-4,-8,16,32].dup, Alt.greater), 0.7812));
-    assert(ae(wilcoxonSignedRank([1,2,3,4,5].dup, [2,-4,-8,-16,32].dup), 0.8125));
-    assert(ae(wilcoxonSignedRank([1,2,3,4,5].dup, [2,-4,-8,-16,32].dup, Alt.less), 0.6875));
-    assert(ae(wilcoxonSignedRank([1,2,3,4,5].dup, [2,-4,-8,-16,32].dup, Alt.greater), 0.4062));
+    assert(approxEqual(wilcoxonSignedRank([1,2,3,4,5].dup, [2,-4,-8,16,32].dup), 0.625));
+    assert(approxEqual(wilcoxonSignedRank([1,2,3,4,5].dup, [2,-4,-8,16,32].dup, Alt.less), 0.3125));
+    assert(approxEqual(wilcoxonSignedRank([1,2,3,4,5].dup, [2,-4,-8,16,32].dup, Alt.greater), 0.7812));
+    assert(approxEqual(wilcoxonSignedRank([1,2,3,4,5].dup, [2,-4,-8,-16,32].dup), 0.8125));
+    assert(approxEqual(wilcoxonSignedRank([1,2,3,4,5].dup, [2,-4,-8,-16,32].dup, Alt.less), 0.6875));
+    assert(approxEqual(wilcoxonSignedRank([1,2,3,4,5].dup, [2,-4,-8,-16,32].dup, Alt.greater), 0.4062));
 
     // Monte carlo unit testing.  Make sure exact, approx are really,
     // really close to each other.
@@ -1721,8 +1725,8 @@ if(doubleInput!(T) && is(typeof(data.front - mu) : double)) {
 
 unittest {
     auto res = wilcoxonSignedRank([-8,-6,2,4,7].dup, 0);
-    assert(isClose(res.testStat, 7));
-    assert(isClose(res.p, 1));
+    assert(approxEqual(res.testStat, 7));
+    assert(approxEqual(res.p, 1));
 }
 
 private double wilcoxonSignedRankPval(double W, ulong N, Alt alt = Alt.twoSided,
@@ -1842,12 +1846,12 @@ private double wilcoxSRPExact(uint W, uint N, Alt alt = Alt.twoSided) {
 
 unittest {
     // Values from R.
-    assert(isClose(wilcoxSRPExact(25, 10, Alt.less), 0.4229));
-    assert(isClose(wilcoxSRPExact(25, 10, Alt.greater), 0.6152));
-    assert(isClose(wilcoxSRPExact(25, 10, Alt.twoSided), 0.8457));
-    assert(isClose(wilcoxSRPExact(31, 10, Alt.less), 0.6523));
-    assert(isClose(wilcoxSRPExact(31, 10, Alt.greater), 0.3848));
-    assert(isClose(wilcoxSRPExact(31, 10, Alt.twoSided), 0.7695));
+    assert(approxEqual(wilcoxSRPExact(25, 10, Alt.less), 0.4229));
+    assert(approxEqual(wilcoxSRPExact(25, 10, Alt.greater), 0.6152));
+    assert(approxEqual(wilcoxSRPExact(25, 10, Alt.twoSided), 0.8457));
+    assert(approxEqual(wilcoxSRPExact(31, 10, Alt.less), 0.6523));
+    assert(approxEqual(wilcoxSRPExact(31, 10, Alt.greater), 0.3848));
+    assert(approxEqual(wilcoxSRPExact(31, 10, Alt.twoSided), 0.7695));
 }
 
 /**Sign test for differences between paired values.  This is a very robust
@@ -1902,16 +1906,15 @@ is(typeof(before.front < after.front) == bool)) {
 }
 
 unittest {
-    alias isClose ae;
-    assert(ae(signTest([1,3,4,2,5].dup, [1,2,4,8,16].dup), 1));
-    assert(ae(signTest([1,3,4,2,5].dup, [1,2,4,8,16].dup, Alt.less), 0.5));
-    assert(ae(signTest([1,3,4,2,5].dup, [1,2,4,8,16].dup, Alt.greater), 0.875));
-    assert(ae(signTest([5,3,4,6,8].dup, [1,2,3,4,5].dup, Alt.greater), 0.03125));
-    assert(ae(signTest([5,3,4,6,8].dup, [1,2,3,4,5].dup, Alt.less), 1));
-    assert(ae(signTest([5,3,4,6,8].dup, [1,2,3,4,5].dup), 0.0625));
+    assert(approxEqual(signTest([1,3,4,2,5].dup, [1,2,4,8,16].dup), 1));
+    assert(approxEqual(signTest([1,3,4,2,5].dup, [1,2,4,8,16].dup, Alt.less), 0.5));
+    assert(approxEqual(signTest([1,3,4,2,5].dup, [1,2,4,8,16].dup, Alt.greater), 0.875));
+    assert(approxEqual(signTest([5,3,4,6,8].dup, [1,2,3,4,5].dup, Alt.greater), 0.03125));
+    assert(approxEqual(signTest([5,3,4,6,8].dup, [1,2,3,4,5].dup, Alt.less), 1));
+    assert(approxEqual(signTest([5,3,4,6,8].dup, [1,2,3,4,5].dup), 0.0625));
 
-    assert(isClose(signTest([1,2,6,7,9].dup, 2), 0.625));
-    assert(ae(signTest([1,2,6,7,9].dup, 2).testStat, 0.75));
+    assert(approxEqual(signTest([1,2,6,7,9].dup, 2), 0.625));
+    assert(approxEqual(signTest([1,2,6,7,9].dup, 2).testStat, 0.75));
 }
 
 /**Similar to the overload, but allows testing for a difference between a
@@ -1941,7 +1944,7 @@ double binomialTest(ulong k, ulong n, double p) {
 
     immutable mode = cast(long) ((n + 1) * p);
     if(k == mode ||
-       isClose(binomialPMF(k, n, p), binomialPMF(mode, n, p), 1 - epsilon)) {
+       approxEqual(binomialPMF(k, n, p), binomialPMF(mode, n, p), 1 - epsilon)) {
         return 1;
     } else if(k > mode) {
         immutable double upperPart = binomialCDFR(k, n, p);
@@ -2010,25 +2013,25 @@ double binomialTest(ulong k, ulong n, double p) {
 
 unittest {
     // Values from R.
-    assert(isClose(binomialTest(46, 96, 0.5), 0.759649));
-    assert(isClose(binomialTest(44, 56, 0.5), 2.088e-5));
-    assert(isClose(binomialTest(12, 56, 0.5), 2.088e-5));
-    assert(isClose(binomialTest(0, 40, 0.25), 2.236e-5));
-    assert(isClose(binomialTest(5, 16, 0.5), 0.2101));
-    assert(isClose(binomialTest(0, 20, 0.4), 4.16e-5));
-    assert(isClose(binomialTest(20, 20, 0.6), 4.16e-5));
-    assert(isClose(binomialTest(6, 88, 0.1), 0.3784));
-    assert(isClose(binomialTest(3, 4, 0.5), 0.625));
-    assert(isClose(binomialTest(4, 7, 0.8), 0.1480));
-    assert(isClose(binomialTest(3, 9, 0.8), 0.003066));
-    assert(isClose(binomialTest(9, 9, 0.7), 0.06565));
-    assert(isClose(binomialTest(2, 11, 0.1), 0.3026));
-    assert(isClose(binomialTest(1, 11, 0.1), 1));
-    assert(isClose(binomialTest(5, 11, 0.1), 0.002751));
-    assert(isClose(binomialTest(5, 12, 0.5), 0.7744));
-    assert(isClose(binomialTest(12, 12, 0.5), 0.0004883));
-    assert(isClose(binomialTest(12, 13, 0.6), 0.02042));
-    assert(isClose(binomialTest(0, 9, 0.1), 1));
+    assert(approxEqual(binomialTest(46, 96, 0.5), 0.759649));
+    assert(approxEqual(binomialTest(44, 56, 0.5), 2.088e-5));
+    assert(approxEqual(binomialTest(12, 56, 0.5), 2.088e-5));
+    assert(approxEqual(binomialTest(0, 40, 0.25), 2.236e-5));
+    assert(approxEqual(binomialTest(5, 16, 0.5), 0.2101));
+    assert(approxEqual(binomialTest(0, 20, 0.4), 4.16e-5));
+    assert(approxEqual(binomialTest(20, 20, 0.6), 4.16e-5));
+    assert(approxEqual(binomialTest(6, 88, 0.1), 0.3784));
+    assert(approxEqual(binomialTest(3, 4, 0.5), 0.625));
+    assert(approxEqual(binomialTest(4, 7, 0.8), 0.1480));
+    assert(approxEqual(binomialTest(3, 9, 0.8), 0.003066));
+    assert(approxEqual(binomialTest(9, 9, 0.7), 0.06565));
+    assert(approxEqual(binomialTest(2, 11, 0.1), 0.3026));
+    assert(approxEqual(binomialTest(1, 11, 0.1), 1));
+    assert(approxEqual(binomialTest(5, 11, 0.1), 0.002751));
+    assert(approxEqual(binomialTest(5, 12, 0.5), 0.7744));
+    assert(approxEqual(binomialTest(12, 12, 0.5), 0.0004883));
+    assert(approxEqual(binomialTest(12, 13, 0.6), 0.02042));
+    assert(approxEqual(binomialTest(0, 9, 0.1), 1));
 }
 
 ///For chiSquareFit and gTestFit, is expected value range counts or proportions?
@@ -2068,8 +2071,8 @@ Examples:
 uint[] observed = [980, 1028, 1001, 964, 1102];
 auto expected = repeat(1.0);
 auto res2 = chiSquareFit(observed, expected);
-assert(isClose(res2, 0.0207));
-assert(isClose(res2.testStat, 11.59));
+assert(approxEqual(res2, 0.0207));
+assert(approxEqual(res2.testStat, 11.59));
 ---
  *
 References:  http://en.wikipedia.org/wiki/Pearson%27s_chi-square_test
@@ -2088,14 +2091,14 @@ unittest {
     uint[] observed = [980, 1028, 1001, 964, 1102];
     auto expected = repeat(cast(double) sum(observed) / observed.length);
     auto res = chiSquareFit(observed, expected, Expected.count);
-    assert(isClose(res, 0.0207));
-    assert(isClose(res.testStat, 11.59));
+    assert(approxEqual(res, 0.0207));
+    assert(approxEqual(res.testStat, 11.59));
 
     auto expected2 = [5.0, 5, 5, 5, 5, 0];
     observed ~= 0;
     auto res2 = chiSquareFit(observed, expected2);
-    assert(isClose(res2, 0.0207));
-    assert(isClose(res2.testStat, 11.59));
+    assert(approxEqual(res2, 0.0207));
+    assert(approxEqual(res2.testStat, 11.59));
 }
 
 // Alias for old name, for backwards compatibility.  Don't document it
@@ -2280,7 +2283,7 @@ unittest {
                 uint[] counts = [k, n - k];
                 double multino = multinomialTest(counts, ps);
                 //writeln(k, "\t", n, "\t", p, "\t", bino, "\t", multino);
-                assert(isClose(bino, multino),
+                assert(approxEqual(bino, multino),
                     text(bino, '\t', multino, '\t', k, '\t', n, '\t', p));
             }
         }
@@ -2344,25 +2347,25 @@ unittest {
     uint[][] table2 = [[60, 20, 10],
                        [80, 50, 15],
                        [70, 40, 11]];
-    assert(isClose(chiSquareContingency(table1), 0.3449));
-    assert(isClose(chiSquareContingency(table2), 0.3449));
-    assert(isClose(chiSquareContingency(table1).testStat, 4.48));
+    assert(approxEqual(chiSquareContingency(table1), 0.3449));
+    assert(approxEqual(chiSquareContingency(table2), 0.3449));
+    assert(approxEqual(chiSquareContingency(table1).testStat, 4.48));
 
     // Test tuple version.
     auto p1 = chiSquareContingency(cast(uint[]) [31, 41, 59],
                                 cast(uint[]) [26, 53, 58],
                                 cast(uint[]) [97, 93, 93]);
-    assert(isClose(p1, 0.0059));
+    assert(approxEqual(p1, 0.0059));
 
     auto p2 = chiSquareContingency(cast(uint[]) [31, 26, 97],
                                 cast(uint[]) [41, 53, 93],
                                 cast(uint[]) [59, 58, 93]);
-    assert(isClose(p2, 0.0059));
+    assert(approxEqual(p2, 0.0059));
 
     uint[] drug1 = [1000, 2000, 1500];
     uint[] drug2 = [1500, 3000, 2300];
     uint[] placebo = [500, 1100, 750];
-    assert(isClose(chiSquareContingency(drug1, drug2, placebo), 0.2397));
+    assert(approxEqual(chiSquareContingency(drug1, drug2, placebo), 0.2397));
 }
 
 // Alias for old name, for backwards compatibility.  Don't document it
@@ -2417,17 +2420,17 @@ unittest {
     uint[] withoutCHD = [268, 199, 42];
     uint[] withCHD = [807, 759, 184];
     auto res = gTestContingency(withoutCHD, withCHD);
-    assert(isClose(res.testStat, 7.3));
-    assert(isClose(res.p, 0.026));
-    assert(isClose(res.mutualInfo, 0.0023313));
+    assert(approxEqual(res.testStat, 7.3));
+    assert(approxEqual(res.p, 0.026));
+    assert(approxEqual(res.mutualInfo, 0.0023313));
 
 
     uint[] moringa = [127, 99, 264];
     uint[] vicinus = [116, 67, 161];
     auto res2 = gTestContingency(moringa, vicinus);
-    assert(isClose(res2.testStat, 6.23));
-    assert(isClose(res2.p, 0.044));
-    assert(isClose(res2.mutualInfo, 0.00538613));
+    assert(approxEqual(res2.testStat, 6.23));
+    assert(approxEqual(res2.p, 0.044));
+    assert(approxEqual(res2.mutualInfo, 0.00538613));
 }
 
 // Pearson and likelihood ratio code are pretty much the same.  Factor out
@@ -2603,14 +2606,14 @@ unittest {
     auto gRes = chiSquareContingency(cTable);
     auto miRes = chiSquareObs(obs1, obs2);
     foreach(ti, elem; miRes.tupleof) {
-        assert(isClose(elem, gRes.tupleof[ti]));
+        assert(approxEqual(elem, gRes.tupleof[ti]));
     }
 
     auto x = ["foo", "bar", "bar", "foo", "foo"];
     auto y = ["xxx", "baz", "baz", "xxx", "baz"];
     auto result = chiSquareObs(x, y);
-    assert(isClose(result.testStat, 2.22222222));
-    assert(isClose(result.p, 0.136037));
+    assert(approxEqual(result.testStat, 2.22222222));
+    assert(approxEqual(result.p, 0.136037));
 
     auto contingency = new uint[][](2, 2);
     foreach(i; 0..x.length) {
@@ -2620,9 +2623,9 @@ unittest {
     }
 
     auto result2 = chiSquareContingency(contingency);
-    assert(isClose(result.testStat, result2.testStat),
+    assert(approxEqual(result.testStat, result2.testStat),
         text(result.testStat, ' ', result2.testStat));
-    assert(isClose(result.p, result2.p));
+    assert(approxEqual(result.p, result2.p));
 }
 
 /**
@@ -2677,15 +2680,15 @@ unittest {
     auto gRes = gTestContingency(cTable);
     auto miRes = gTestObs(obs1, obs2);
     foreach(ti, elem; miRes.tupleof) {
-        assert(isClose(elem, gRes.tupleof[ti]));
+        assert(approxEqual(elem, gRes.tupleof[ti]));
     }
 
     auto x = ["foo", "bar", "bar", "foo", "foo"];
     auto y = ["xxx", "baz", "baz", "xxx", "baz"];
     auto result = gTestObs(x, y);
-    assert(isClose(result.testStat, 2.91103));
-    assert(isClose(result.p, 0.0879755));
-    assert(isClose(result.mutualInfo, 0.419973));
+    assert(approxEqual(result.testStat, 2.91103));
+    assert(approxEqual(result.p, 0.0879755));
+    assert(approxEqual(result.mutualInfo, 0.419973));
 }
 
 package double toContingencyScore(T, U, Uint)
@@ -2768,8 +2771,8 @@ alternative.
 Examples:
 ---
 double res = fisherExact([[2u, 7], [8, 2]], Alt.less);
-assert(isClose(res.p, 0.01852));  // Odds ratio is very small in this case.
-assert(isClose(res.testStat, 4.0 / 56.0));
+assert(approxEqual(res.p, 0.01852));  // Odds ratio is very small in this case.
+assert(approxEqual(res.testStat, 4.0 / 56.0));
 ---
 
 References:  http://en.wikipedia.org/wiki/Fisher%27s_Exact_Test
@@ -2817,7 +2820,7 @@ if(isIntegral!(T)) {
     immutable double pMode = hypergeometricPMF(mode, n1, n2, n);
 
     enum epsilon = 1 - 1e-5;
-    if(isClose(pExact, pMode, 1 - epsilon)) {
+    if(approxEqual(pExact, pMode, 1 - epsilon)) {
         return TestRes(oddsRatio, 1);
     } else if(c[0][0] < mode) {
         immutable double pLower = hypergeometricCDF(c[0][0], n1, n2, n);
@@ -2930,7 +2933,7 @@ unittest {
             cast(uint) ((cast(double) (n + 1) * (n1 + 1)) / (n1 + n2 + 2));
         immutable double pExact = hypergeometricPMF(c[0][0], n1, n2, n);
         immutable double pMode = hypergeometricPMF(mode, n1, n2, n);
-        if(isClose(pExact, pMode, 1e-7))
+        if(approxEqual(pExact, pMode, 1e-7))
             return 1;
         double sum = 0;
         foreach(i; 0..n + 1) {
@@ -2950,50 +2953,50 @@ unittest {
         c[1][1] = uniform(0U, 51U);
         double naiveAns = naive(c);
         double fastAns = fisherExact(c);
-        assert(isClose(naiveAns, fastAns), text(c, naiveAns, fastAns));
+        assert(approxEqual(naiveAns, fastAns), text(c, naiveAns, fastAns));
     }
 
     auto res = fisherExact([[19000, 80000], [20000, 90000]]);
-    assert(isClose(res.testStat, 1.068731));
-    assert(isClose(res, 3.319e-9));
+    assert(approxEqual(res.testStat, 1.068731));
+    assert(approxEqual(res, 3.319e-9));
     res = fisherExact([[18000, 80000], [20000, 90000]]);
-    assert(isClose(res, 0.2751));
+    assert(approxEqual(res, 0.2751));
     res = fisherExact([[14500, 20000], [30000, 40000]]);
-    assert(isClose(res, 0.01106));
+    assert(approxEqual(res, 0.01106));
     res = fisherExact([[100, 2], [1000, 5]]);
-    assert(isClose(res, 0.1301));
+    assert(approxEqual(res, 0.1301));
     res = fisherExact([[2, 7], [8, 2]]);
-    assert(isClose(res, 0.0230141));
+    assert(approxEqual(res, 0.0230141));
     res = fisherExact([[5, 1], [10, 10]]);
-    assert(isClose(res, 0.1973244));
+    assert(approxEqual(res, 0.1973244));
     res = fisherExact([[5, 15], [20, 20]]);
-    assert(isClose(res, 0.0958044));
+    assert(approxEqual(res, 0.0958044));
     res = fisherExact([[5, 16], [20, 25]]);
-    assert(isClose(res, 0.1725862));
+    assert(approxEqual(res, 0.1725862));
     res = fisherExact([[10, 5], [10, 1]]);
-    assert(isClose(res, 0.1973244));
+    assert(approxEqual(res, 0.1973244));
     res = fisherExact([[5, 0], [1, 4]]);
-    assert(isClose(res.p, 0.04761904));
+    assert(approxEqual(res.p, 0.04761904));
     res = fisherExact([[0, 1], [3, 2]]);
-    assert(isClose(res.p, 1.0));
+    assert(approxEqual(res.p, 1.0));
     res = fisherExact([[0, 2], [6, 4]]);
-    assert(isClose(res.p, 0.4545454545));
+    assert(approxEqual(res.p, 0.4545454545));
     res = fisherExact([[2, 7], [8, 2]], Alt.less);
-    assert(isClose(res, 0.01852));
+    assert(approxEqual(res, 0.01852));
     res = fisherExact([[5, 1], [10, 10]], Alt.less);
-    assert(isClose(res, 0.9783));
+    assert(approxEqual(res, 0.9783));
     res = fisherExact([[5, 15], [20, 20]], Alt.less);
-    assert(isClose(res, 0.05626));
+    assert(approxEqual(res, 0.05626));
     res = fisherExact([[5, 16], [20, 25]], Alt.less);
-    assert(isClose(res, 0.08914));
+    assert(approxEqual(res, 0.08914));
     res = fisherExact([[2, 7], [8, 2]], Alt.greater);
-    assert(isClose(res, 0.999));
+    assert(approxEqual(res, 0.999));
     res = fisherExact([[5, 1], [10, 10]], Alt.greater);
-    assert(isClose(res, 0.1652));
+    assert(approxEqual(res, 0.1652));
     res = fisherExact([[5, 15], [20, 20]], Alt.greater);
-    assert(isClose(res, 0.985));
+    assert(approxEqual(res, 0.985));
     res = fisherExact([[5, 16], [20, 25]], Alt.greater);
-    assert(isClose(res, 0.9723));
+    assert(approxEqual(res, 0.9723));
 }
 
 /**
@@ -3018,16 +3021,16 @@ if(doubleInput!(T) && doubleInput!(U)) {
 }
 
 unittest {
-    assert(isClose(ksTest([1,2,3,4,5], [1,2,3,4,5]).testStat, 0));
-    assert(isClose(ksTestDestructive([1,2,3,4,5], [1,2,2,3,5]).testStat, -.2));
-    assert(isClose(ksTest([-1,0,2,8, 6], [1,2,2,3,5]).testStat, .4));
-    assert(isClose(ksTest([1,2,3,4,5], [1,2,2,3,5,7,8]).testStat, .2857));
-    assert(isClose(ksTestDestructive([1, 2, 3, 4, 4, 4, 5],
+    assert(approxEqual(ksTest([1,2,3,4,5], [1,2,3,4,5]).testStat, 0));
+    assert(approxEqual(ksTestDestructive([1,2,3,4,5], [1,2,2,3,5]).testStat, -.2));
+    assert(approxEqual(ksTest([-1,0,2,8, 6], [1,2,2,3,5]).testStat, .4));
+    assert(approxEqual(ksTest([1,2,3,4,5], [1,2,2,3,5,7,8]).testStat, .2857));
+    assert(approxEqual(ksTestDestructive([1, 2, 3, 4, 4, 4, 5],
            [1, 2, 3, 4, 5, 5, 5]).testStat, .2857));
 
-    assert(isClose(ksTest([1, 2, 3, 4, 4, 4, 5], [1, 2, 3, 4, 5, 5, 5]),
+    assert(approxEqual(ksTest([1, 2, 3, 4, 4, 4, 5], [1, 2, 3, 4, 5, 5, 5]),
            .9375));
-    assert(isClose(ksTestDestructive([1, 2, 3, 4, 4, 4, 5],
+    assert(approxEqual(ksTestDestructive([1, 2, 3, 4, 4, 4, 5],
         [1, 2, 3, 4, 5, 5, 5]), .9375));
 }
 
@@ -3065,15 +3068,15 @@ if(doubleInput!(T) && is(ReturnType!(Func) : double)) {
 
 unittest {
     auto stdNormal = paramFunctor!(normalCDF)(0.0, 1.0);
-    assert(isClose(ksTest([1,2,3,4,5].dup, stdNormal).testStat, -.8413));
-    assert(isClose(ksTestDestructive([-1,0,2,8, 6].dup, stdNormal).testStat, -.5772));
+    assert(approxEqual(ksTest([1,2,3,4,5].dup, stdNormal).testStat, -.8413));
+    assert(approxEqual(ksTestDestructive([-1,0,2,8, 6].dup, stdNormal).testStat, -.5772));
     auto lotsOfTies = [5,1,2,2,2,2,2,2,3,4].dup;
-    assert(isClose(ksTest(lotsOfTies, stdNormal).testStat, -0.8772));
+    assert(approxEqual(ksTest(lotsOfTies, stdNormal).testStat, -0.8772));
 
-    assert(isClose(ksTest([0,1,2,3,4].dup, stdNormal), .03271));
+    assert(approxEqual(ksTest([0,1,2,3,4].dup, stdNormal), .03271));
 
     auto uniform01 = parametrize!(uniformCDF)(0, 1);
-    assert(isClose(ksTestDestructive([0.1, 0.3, 0.5, 0.9, 1].dup, uniform01), 0.7591));
+    assert(approxEqual(ksTestDestructive([0.1, 0.3, 0.5, 0.9, 1].dup, uniform01), 0.7591));
 
 }
 
@@ -3195,9 +3198,9 @@ unittest {
     // hard-coded as the equivalent to positive().  The median of this data
     // is 0.5, so everything works.
     immutable int[] data = [1,0,0,0,1,1,0,0,1,0,1,0,1,0,1,1,1,0,0,1].idup;
-    assert(isClose(runsTest(data), 0.3581));
-    assert(isClose(runsTest(data, Alt.less), 0.821));
-    assert(isClose(runsTest(data, Alt.greater), 0.1791));
+    assert(approxEqual(runsTest(data), 0.3581));
+    assert(approxEqual(runsTest(data, Alt.less), 0.821));
+    assert(approxEqual(runsTest(data, Alt.greater), 0.1791));
 }
 
 /**
@@ -3309,9 +3312,9 @@ ConfInt pearsonCorTest()(
     double confLevel = 0.95
 ) {
     dstatsEnforce(N >= 0, "N must be >= 0 for pearsonCorTest.");
-    dstatsEnforce(cor > -1.0 || isClose(cor, -1.0),
+    dstatsEnforce(cor > -1.0 || approxEqual(cor, -1.0),
         "Correlation must be between 0, 1.");
-    dstatsEnforce(cor < 1.0 || isClose(cor, 1.0),
+    dstatsEnforce(cor < 1.0 || approxEqual(cor, 1.0),
          "Correlation must be between 0, 1.");
     enforceConfidence(confLevel);
 
@@ -3391,21 +3394,21 @@ unittest {
     auto t2 = pearsonCorTest([1,2,3,4,5].dup, [2,1,4,3,5].dup, Alt.less);
     auto t3 = pearsonCorTest([1,2,3,4,5].dup, [2,1,4,3,5].dup, Alt.greater);
 
-    assert(isClose(t1.testStat, 0.8));
-    assert(isClose(t2.testStat, 0.8));
-    assert(isClose(t3.testStat, 0.8));
+    assert(approxEqual(t1.testStat, 0.8));
+    assert(approxEqual(t2.testStat, 0.8));
+    assert(approxEqual(t3.testStat, 0.8));
 
-    assert(isClose(t1.p, 0.1041));
-    assert(isClose(t2.p, 0.948));
-    assert(isClose(t3.p, 0.05204));
+    assert(approxEqual(t1.p, 0.1041));
+    assert(approxEqual(t2.p, 0.948));
+    assert(approxEqual(t3.p, 0.05204));
 
-    assert(isClose(t1.lowerBound, -0.2796400));
-    assert(isClose(t3.lowerBound, -0.06438567));
-    assert(isClose(t2.lowerBound, -1));
+    assert(approxEqual(t1.lowerBound, -0.2796400));
+    assert(approxEqual(t3.lowerBound, -0.06438567));
+    assert(approxEqual(t2.lowerBound, -1));
 
-    assert(isClose(t1.upperBound, 0.9861962));
-    assert(isClose(t2.upperBound, 0.9785289));
-    assert(isClose(t3.upperBound, 1));
+    assert(approxEqual(t1.upperBound, 0.9861962));
+    assert(approxEqual(t2.upperBound, 0.9785289));
+    assert(approxEqual(t3.upperBound, 1));
 
     // Test special case hack for cor = +- 1.
     uint[] myArr = [1,2,3,4,5];
@@ -3415,18 +3418,18 @@ unittest {
     auto t4 = pearsonCorTest(myArr, myArr, Alt.twoSided);
     auto t5 = pearsonCorTest(myArr, myArr, Alt.less);
     auto t6 = pearsonCorTest(myArr, myArr, Alt.greater);
-    assert(isClose(t4.testStat, 1));
-    assert(isClose(t4.p, 0));
-    assert(isClose(t5.p, 1));
-    assert(isClose(t6.p, 0));
+    assert(approxEqual(t4.testStat, 1));
+    assert(approxEqual(t4.p, 0));
+    assert(approxEqual(t5.p, 1));
+    assert(approxEqual(t6.p, 0));
 
     auto t7 = pearsonCorTest(myArr, myArrReverse, Alt.twoSided);
     auto t8 = pearsonCorTest(myArr, myArrReverse, Alt.less);
     auto t9 = pearsonCorTest(myArr, myArrReverse, Alt.greater);
-    assert(isClose(t7.testStat, -1));
-    assert(isClose(t7.p, 0));
-    assert(isClose(t8.p, 0));
-    assert(isClose(t9.p, 1));
+    assert(approxEqual(t7.testStat, -1));
+    assert(approxEqual(t7.p, 0));
+    assert(approxEqual(t8.p, 0));
+    assert(approxEqual(t9.p, 1));
 }
 
 /**
@@ -3467,13 +3470,13 @@ unittest {
     auto t2 = spearmanCorTest(arr1, arr2, Alt.less);
     auto t3 = spearmanCorTest(arr1, arr2, Alt.greater);
 
-    assert(isClose(t1.testStat, -0.1769406));
-    assert(isClose(t2.testStat, -0.1769406));
-    assert(isClose(t3.testStat, -0.1769406));
+    assert(approxEqual(t1.testStat, -0.1769406));
+    assert(approxEqual(t2.testStat, -0.1769406));
+    assert(approxEqual(t3.testStat, -0.1769406));
 
-    assert(isClose(t1.p, 0.4429));
-    assert(isClose(t3.p, 0.7785));
-    assert(isClose(t2.p, 0.2215));
+    assert(approxEqual(t1.p, 0.4429));
+    assert(approxEqual(t3.p, 0.7785));
+    assert(approxEqual(t2.p, 0.2215));
 }
 
 /**
@@ -3672,46 +3675,46 @@ unittest {
     auto t2 = kendallCorTest(arr1, arr2, Alt.less);
     auto t3 = kendallCorTest(arr1, arr2, Alt.greater);
 
-    assert(isClose(t1.testStat, -.1448010));
-    assert(isClose(t2.testStat, -.1448010));
-    assert(isClose(t3.testStat, -.1448010));
+    assert(approxEqual(t1.testStat, -.1448010));
+    assert(approxEqual(t2.testStat, -.1448010));
+    assert(approxEqual(t3.testStat, -.1448010));
 
-    assert(isClose(t1.p, 0.3923745));
-    //assert(isClose(t3.p, 0.8038127));
-    assert(isClose(t2.p, 0.1961873));
+    assert(approxEqual(t1.p, 0.3923745));
+    //assert(approxEqual(t3.p, 0.8038127));
+    assert(approxEqual(t2.p, 0.1961873));
 
     // Now, test the case of ties in both arrays.
     arr1 = [1,1,1,2,2,3,4,5,5,6];
     arr2 = [1,1,2,3,4,5,5,5,5,6];
-    assert(isClose(kendallCorTest(arr1, arr2, Alt.twoSided).p, 0.001216776));
-    //assert(isClose(kendallCorTest(arr1, arr2, Alt.less).p, 0.9993916));
-    assert(isClose(kendallCorTest(arr1, arr2, Alt.greater).p, 0.0006083881));
+    assert(approxEqual(kendallCorTest(arr1, arr2, Alt.twoSided).p, 0.001216776));
+    //assert(approxEqual(kendallCorTest(arr1, arr2, Alt.less).p, 0.9993916));
+    assert(approxEqual(kendallCorTest(arr1, arr2, Alt.greater).p, 0.0006083881));
 
     arr1 = [1,1,1,2,2,2,3,3,3,4,4,4,5,5,5];
     arr2 = [1,1,1,3,3,3,2,2,2,5,5,5,4,4,4];
-    assert(isClose(kendallCorTest(arr1, arr2).p, 0.006123));
-    assert(isClose(kendallCorTest(assumeSorted(arr1), arr2).p, 0.006123));
+    assert(approxEqual(kendallCorTest(arr1, arr2).p, 0.006123));
+    assert(approxEqual(kendallCorTest(assumeSorted(arr1), arr2).p, 0.006123));
 
     // Test the exact stuff.  Still using values from R.
     uint[] foo = [1,2,3,4,5];
     uint[] bar = [1,2,3,5,4];
     uint[] baz = [5,3,1,2,4];
 
-    assert(isClose(kendallCorTest(foo, foo).p, 0.01666666));
-    assert(isClose(kendallCorTest(foo, foo, Alt.greater).p, 0.008333333));
-    assert(isClose(kendallCorTest(foo, foo, Alt.less).p, 1));
+    assert(approxEqual(kendallCorTest(foo, foo).p, 0.01666666));
+    assert(approxEqual(kendallCorTest(foo, foo, Alt.greater).p, 0.008333333));
+    assert(approxEqual(kendallCorTest(foo, foo, Alt.less).p, 1));
 
-    assert(isClose(kendallCorTest(foo, bar).p, 0.083333333));
-    assert(isClose(kendallCorTest(foo, bar, Alt.greater).p, 0.041666667));
-    assert(isClose(kendallCorTest(foo, bar, Alt.less).p, 0.9917));
+    assert(approxEqual(kendallCorTest(foo, bar).p, 0.083333333));
+    assert(approxEqual(kendallCorTest(foo, bar, Alt.greater).p, 0.041666667));
+    assert(approxEqual(kendallCorTest(foo, bar, Alt.less).p, 0.9917));
 
-    assert(isClose(kendallCorTest(foo, baz).p, 0.8167));
-    assert(isClose(kendallCorTest(foo, baz, Alt.greater).p, 0.7583));
-    assert(isClose(kendallCorTest(foo, baz, Alt.less).p, .4083));
+    assert(approxEqual(kendallCorTest(foo, baz).p, 0.8167));
+    assert(approxEqual(kendallCorTest(foo, baz, Alt.greater).p, 0.7583));
+    assert(approxEqual(kendallCorTest(foo, baz, Alt.less).p, .4083));
 
-    assert(isClose(kendallCorTest(bar, baz).p, 0.4833));
-    assert(isClose(kendallCorTest(bar, baz, Alt.greater).p, 0.8833));
-    assert(isClose(kendallCorTest(bar, baz, Alt.less).p, 0.2417));
+    assert(approxEqual(kendallCorTest(bar, baz).p, 0.4833));
+    assert(approxEqual(kendallCorTest(bar, baz, Alt.greater).p, 0.8833));
+    assert(approxEqual(kendallCorTest(bar, baz, Alt.less).p, 0.2417));
 
     // A little monte carlo unittesting.  For large ranges, the deviation
     // between the exact and approximate version should be extremely small.
@@ -3821,11 +3824,11 @@ unittest {
     auto r1 = dAgostinoK(arr1);
     auto r2 = dAgostinoK(arr2);
 
-    assert(isClose(r1.testStat, 3.1368));
-    assert(isClose(r1.p, 0.2084));
+    assert(approxEqual(r1.testStat, 3.1368));
+    assert(approxEqual(r1.p, 0.2084));
 
-    assert(isClose(r2.testStat, 1.1816));
-    assert(isClose(r2.p, 0.5539));
+    assert(approxEqual(r2.testStat, 1.1816));
+    assert(approxEqual(r2.p, 0.5539));
 }
 
 /**Fisher's method of meta-analyzing a set of P-values to determine whether
@@ -3859,11 +3862,11 @@ unittest {
     // First, basic sanity check.  Make sure w/ one P-value, we get back that
     // P-value.
     for(double p = 0.01; p < 1; p += 0.01) {
-        assert(isClose(fishersMethod([p].dup).p, p));
+        assert(approxEqual(fishersMethod([p].dup).p, p));
     }
     float[] ps = [0.739, 0.0717, 0.01932, 0.03809];
     auto res = fishersMethod(ps);
-    assert(isClose(res.testStat, 20.31));
+    assert(approxEqual(res.testStat, 20.31));
     assert(res.p < 0.01);
 }
 
@@ -3941,39 +3944,38 @@ unittest {
     // Comparing results to R.
     auto pVals = [.90, .01, .03, .03, .70, .60, .01].dup;
     auto qVals = falseDiscoveryRate(pVals);
-    alias isClose ae;
-    assert(ae(qVals[0], .9));
-    assert(ae(qVals[1], .035));
-    assert(ae(qVals[2], .052));
-    assert(ae(qVals[3], .052));
-    assert(ae(qVals[4], .816666666667));
-    assert(ae(qVals[5], .816666666667));
-    assert(ae(qVals[6], .035));
+    assert(approxEqual(qVals[0], .9));
+    assert(approxEqual(qVals[1], .035));
+    assert(approxEqual(qVals[2], .052));
+    assert(approxEqual(qVals[3], .052));
+    assert(approxEqual(qVals[4], .816666666667));
+    assert(approxEqual(qVals[5], .816666666667));
+    assert(approxEqual(qVals[6], .035));
 
     auto p2 = [.1, .02, .6, .43, .001].dup;
     auto q2 = falseDiscoveryRate(p2);
-    assert(ae(q2[0], .16666666));
-    assert(ae(q2[1], .05));
-    assert(ae(q2[2], .6));
-    assert(ae(q2[3], .5375));
-    assert(ae(q2[4], .005));
+    assert(approxEqual(q2[0], .16666666));
+    assert(approxEqual(q2[1], .05));
+    assert(approxEqual(q2[2], .6));
+    assert(approxEqual(q2[3], .5375));
+    assert(approxEqual(q2[4], .005));
 
     // Dependent case.
     qVals = falseDiscoveryRate(pVals, Dependency.yes);
-    assert(ae(qVals[0], 1));
-    assert(ae(qVals[1], .09075));
-    assert(ae(qVals[2], .136125));
-    assert(ae(qVals[3], .136125));
-    assert(ae(qVals[4], 1));
-    assert(ae(qVals[5], 1));
-    assert(ae(qVals[6], .09075));
+    assert(approxEqual(qVals[0], 1));
+    assert(approxEqual(qVals[1], .09075));
+    assert(approxEqual(qVals[2], .136125));
+    assert(approxEqual(qVals[3], .136125));
+    assert(approxEqual(qVals[4], 1));
+    assert(approxEqual(qVals[5], 1));
+    assert(approxEqual(qVals[6], .09075));
 
     q2 = falseDiscoveryRate(p2, Dependency.yes);
-    assert(ae(q2[0], .38055555));
-    assert(ae(q2[1], .1141667));
-    assert(ae(q2[2], 1));
-    assert(ae(q2[3], 1));
-    assert(ae(q2[4], .01141667));
+    assert(approxEqual(q2[0], .38055555));
+    assert(approxEqual(q2[1], .1141667));
+    assert(approxEqual(q2[2], 1));
+    assert(approxEqual(q2[3], 1));
+    assert(approxEqual(q2[4], .01141667));
 }
 
 /**Uses the Hochberg procedure to control the familywise error rate assuming
@@ -4019,20 +4021,19 @@ if(doubleInput!(T)) {
 }
 
 unittest {
-    alias isClose ae;
     auto q = hochberg([0.01, 0.02, 0.025, 0.9].dup);
-    assert(ae(q[0], 0.04));
-    assert(ae(q[1], 0.05));
-    assert(ae(q[2], 0.05));
-    assert(ae(q[3], 0.9));
+    assert(approxEqual(q[0], 0.04));
+    assert(approxEqual(q[1], 0.05));
+    assert(approxEqual(q[2], 0.05));
+    assert(approxEqual(q[3], 0.9));
 
     auto p2 = [.1, .02, .6, .43, .001].dup;
     auto q2 = hochberg(p2);
-    assert(ae(q2[0], .3));
-    assert(ae(q2[1], .08));
-    assert(ae(q2[2], .6));
-    assert(ae(q2[3], .6));
-    assert(ae(q2[4], .005));
+    assert(approxEqual(q2[0], .3));
+    assert(approxEqual(q2[1], .08));
+    assert(approxEqual(q2[2], .6));
+    assert(approxEqual(q2[3], .6));
+    assert(approxEqual(q2[4], .005));
 }
 
 /**Uses the Holm-Bonferroni method to adjust a set of P-values in a way that
@@ -4082,18 +4083,17 @@ if(doubleInput!(T)) {
 unittest {
     // Values from R.
     auto ps = holmBonferroni([0.001, 0.2, 0.3, 0.4, 0.7].dup);
-    alias isClose ae;
-    assert(ae(ps[0], 0.005));
-    assert(ae(ps[1], 0.8));
-    assert(ae(ps[2], 0.9));
-    assert(ae(ps[3], 0.9));
-    assert(ae(ps[4], 0.9));
+    assert(approxEqual(ps[0], 0.005));
+    assert(approxEqual(ps[1], 0.8));
+    assert(approxEqual(ps[2], 0.9));
+    assert(approxEqual(ps[3], 0.9));
+    assert(approxEqual(ps[4], 0.9));
 
     ps = holmBonferroni([0.3, 0.1, 0.4, 0.1, 0.5, 0.9].dup);
     assert(ps == [1f, 0.6f, 1f, 0.6f, 1f, 1f]);
 }
 
-// old unconstrained isClose to work around https://issues.dlang.org/show_bug.cgi?id=18287
+// old unconstrained approxEqual to work around https://issues.dlang.org/show_bug.cgi?id=18287
 static if (__VERSION__ == 2078) private
 {
     /**
@@ -4107,13 +4107,13 @@ static if (__VERSION__ == 2078) private
        Returns:
            `true` if the two items are approximately equal under either criterium.
            If one item is a range, and the other is a single value, then the result
-           is the logical and-ing of calling `isClose` on each element of the
+           is the logical and-ing of calling `approxEqual` on each element of the
            ranged item against the single item. If both items are ranges, then
-           `isClose` returns `true` if and only if the ranges have the same
-           number of elements and if `isClose` evaluates to `true` for each
+           `approxEqual` returns `true` if and only if the ranges have the same
+           number of elements and if `approxEqual` evaluates to `true` for each
            pair of elements.
      */
-    bool isClose(T, U, V)(T lhs, U rhs, V maxRelDiff, V maxAbsDiff = 1e-5)
+    bool approxEqual(T, U, V)(T lhs, U rhs, V maxRelDiff, V maxAbsDiff = 1e-5)
     {
         import std.range.primitives : empty, front, isInputRange, popFront;
         static if (isInputRange!T)
@@ -4125,21 +4125,21 @@ static if (__VERSION__ == 2078) private
                 {
                     if (lhs.empty) return rhs.empty;
                     if (rhs.empty) return lhs.empty;
-                    if (!isClose(lhs.front, rhs.front, maxRelDiff, maxAbsDiff))
+                    if (!approxEqual(lhs.front, rhs.front, maxRelDiff, maxAbsDiff))
                         return false;
                 }
             }
             else static if (isIntegral!U)
             {
                 // convert rhs to real
-                return isClose(lhs, real(rhs), maxRelDiff, maxAbsDiff);
+                return approxEqual(lhs, real(rhs), maxRelDiff, maxAbsDiff);
             }
             else
             {
                 // lhs is range, rhs is number
                 for (; !lhs.empty; lhs.popFront())
                 {
-                    if (!isClose(lhs.front, rhs, maxRelDiff, maxAbsDiff))
+                    if (!approxEqual(lhs.front, rhs, maxRelDiff, maxAbsDiff))
                         return false;
                 }
                 return true;
@@ -4152,7 +4152,7 @@ static if (__VERSION__ == 2078) private
                 // lhs is number, rhs is range
                 for (; !rhs.empty; rhs.popFront())
                 {
-                    if (!isClose(lhs, rhs.front, maxRelDiff, maxAbsDiff))
+                    if (!approxEqual(lhs, rhs.front, maxRelDiff, maxAbsDiff))
                         return false;
                 }
                 return true;
@@ -4160,7 +4160,7 @@ static if (__VERSION__ == 2078) private
             else static if (isIntegral!T || isIntegral!U)
             {
                 // convert both lhs and rhs to real
-                return isClose(real(lhs), real(rhs), maxRelDiff, maxAbsDiff);
+                return approxEqual(real(lhs), real(rhs), maxRelDiff, maxAbsDiff);
             }
             else
             {
@@ -4182,10 +4182,10 @@ static if (__VERSION__ == 2078) private
     }
 
     /**
-       Returns $(D isClose(lhs, rhs, 1e-2, 1e-5)).
+       Returns $(D approxEqual(lhs, rhs, 1e-2, 1e-5)).
      */
-    bool isClose(T, U)(T lhs, U rhs)
+    bool approxEqual(T, U)(T lhs, U rhs)
     {
-        return isClose(lhs, rhs, 1e-2, 1e-5);
+        return approxEqual(lhs, rhs, 1e-2, 1e-5);
     }
 }

@@ -43,6 +43,11 @@ import dstats.tests : toContingencyScore, gTestContingency;
 
 version(unittest) {
     import std.stdio, std.bigint, dstats.tests : gTestObs;
+
+    version(GDC)
+        alias approxEqual = std.math.approxEqual;
+    else
+        alias approxEqual = std.math.isClose;
 }
 
 /**This function calculates the Shannon entropy of a forward range that is
@@ -51,9 +56,9 @@ version(unittest) {
  * Examples:
  * ---
  * double uniform3 = entropyCounts([4, 4, 4]);
- * assert(isClose(uniform3, log2(3)));
+ * assert(approxEqual(uniform3, log2(3)));
  * double uniform4 = entropyCounts([5, 5, 5, 5]);
- * assert(isClose(uniform4, 2));
+ * assert(approxEqual(uniform4, 2));
  * ---
  */
 double entropyCounts(T)(T data)
@@ -77,12 +82,12 @@ if(isIterable!(T)) {
 
 unittest {
     double uniform3 = entropyCounts([4, 4, 4].dup);
-    assert(isClose(uniform3, log2(3)));
+    assert(approxEqual(uniform3, log2(3)));
     double uniform4 = entropyCounts([5, 5, 5, 5].dup);
-    assert(isClose(uniform4, 2));
+    assert(approxEqual(uniform4, 2));
     assert(entropyCounts([2,2].dup)==1);
     assert(entropyCounts([5.1,5.1,5.1,5.1].dup)==2);
-    assert(isClose(entropyCounts([1,2,3,4,5].dup), 2.1492553971685));
+    assert(approxEqual(entropyCounts([1,2,3,4,5].dup), 2.1492553971685));
 }
 
 template FlattenType(T...) {
@@ -293,10 +298,10 @@ unittest {
  * ---
  * int[] foo = [1, 1, 1, 2, 2, 2, 3, 3, 3];
  * double entropyFoo = entropy(foo);  // Plain old entropy of foo.
- * assert(isClose(entropyFoo, log2(3)));
+ * assert(approxEqual(entropyFoo, log2(3)));
  * int[] bar = [1, 2, 3, 1, 2, 3, 1, 2, 3];
  * double HFooBar = entropy(joint(foo, bar));  // Joint entropy of foo and bar.
- * assert(isClose(HFooBar, log2(9)));
+ * assert(approxEqual(HFooBar, log2(9)));
  * ---
  */
 double entropy(T)(T data)
@@ -381,23 +386,23 @@ unittest {
     { // Generic version.
         int[] foo = [1, 1, 1, 2, 2, 2, 3, 3, 3];
         double entropyFoo = entropy(foo);
-        assert(isClose(entropyFoo, log2(3)));
+        assert(approxEqual(entropyFoo, log2(3)));
         int[] bar = [1, 2, 3, 1, 2, 3, 1, 2, 3];
         auto stuff = joint(foo, bar);
         double jointEntropyFooBar = entropy(joint(foo, bar));
-        assert(isClose(jointEntropyFooBar, log2(9)));
+        assert(approxEqual(jointEntropyFooBar, log2(9)));
     }
     { // byte specialization
         byte[] foo = [-1, -1, -1, 2, 2, 2, 3, 3, 3];
         double entropyFoo = entropy(foo);
-        assert(isClose(entropyFoo, log2(3)));
+        assert(approxEqual(entropyFoo, log2(3)));
         string bar = "ACTGGCTA";
         assert(entropy(bar) == 2);
     }
     { // NeedsHeap version.
         string[] arr = ["1", "1", "1", "2", "2", "2", "3", "3", "3"];
         auto m = map!("a")(arr);
-        assert(isClose(entropy(m), log2(3)));
+        assert(approxEqual(entropy(m), log2(3)));
     }
 }
 
@@ -418,7 +423,7 @@ unittest {
     // This shouldn't be easy to screw up.  Just really basic.
     int[] foo = [1,2,2,1,1];
     int[] bar = [1,2,3,1,2];
-    assert(isClose(entropy(foo) - condEntropy(foo, bar),
+    assert(approxEqual(entropy(foo) - condEntropy(foo, bar),
            mutualInfo(foo, bar)));
 }
 
@@ -457,11 +462,11 @@ if(isInputRange!(T) && isInputRange!(U)) {
 
 unittest {
     // Values from R, but converted from base e to base 2.
-    assert(isClose(mutualInfo(bin([1,2,3,3,8].dup, 10),
+    assert(approxEqual(mutualInfo(bin([1,2,3,3,8].dup, 10),
            bin([8,6,7,5,3].dup, 10)), 1.921928));
-    assert(isClose(mutualInfo(bin([1,2,1,1,3,4,3,6].dup, 2),
+    assert(approxEqual(mutualInfo(bin([1,2,1,1,3,4,3,6].dup, 2),
            bin([2,7,9,6,3,1,7,40].dup, 2)), .2935645));
-    assert(isClose(mutualInfo(bin([1,2,1,1,3,4,3,6].dup, 4),
+    assert(approxEqual(mutualInfo(bin([1,2,1,1,3,4,3,6].dup, 4),
            bin([2,7,9,6,3,1,7,40].dup, 4)), .5435671));
 
 }
@@ -492,10 +497,10 @@ unittest {
     // Values from Matlab mi package by Hanchuan Peng.
     auto res = condMutualInfo([1,2,1,2,1,2,1,2].dup, [3,1,2,3,4,2,1,2].dup,
                               [1,2,3,1,2,3,1,2].dup);
-    assert(isClose(res, 0.4387));
+    assert(approxEqual(res, 0.4387));
     res = condMutualInfo([1,2,3,1,2].dup, [2,1,3,2,1].dup,
                          joint([1,1,1,2,2].dup, [2,2,2,1,1].dup));
-    assert(isClose(res, 1.3510));
+    assert(approxEqual(res, 1.3510));
 }
 
 /**Calculates the entropy of any old input range of observations more quickly
@@ -535,7 +540,7 @@ unittest {
     uint[] foo = [1U,2,3,1,3,2,6,3,1,6,3,2,2,1,3,5,2,1].dup;
     auto sorted = foo.dup;
     sort(sorted);
-    assert(isClose(entropySorted(sorted), entropy(foo)));
+    assert(approxEqual(entropySorted(sorted), entropy(foo)));
 }
 
 /**
@@ -762,36 +767,35 @@ struct DenseInfoTheory {
 }
 
 unittest {
-    alias ae = isClose;
     auto dense = DenseInfoTheory(3);
     auto a = [0, 1, 2, 0, 1, 2, 0, 1, 2, 0, 1, 2];
     auto b = [1, 2, 2, 2, 0, 0, 1, 1, 1, 1, 0, 0];
     auto c = [1, 1, 1, 1, 2, 2, 2, 2, 0, 0, 0, 0];
 
-    // need some isCloses in here because some methods do floating
+    // need some approxEquals in here because some methods do floating
     // point ops in hash-dependent orders
 
     assert(entropy(a) == dense.entropy(a));
     assert(entropy(b) == dense.entropy(b));
     assert(entropy(c) == dense.entropy(c));
-    assert(ae(entropy(joint(a, c)), dense.entropy(joint(c, a))));
-    assert(ae(entropy(joint(a, b)), dense.entropy(joint(a, b))));
+    assert(approxEqual(entropy(joint(a, c)), dense.entropy(joint(c, a))));
+    assert(approxEqual(entropy(joint(a, b)), dense.entropy(joint(a, b))));
     assert(entropy(joint(c, b)) == dense.entropy(joint(c, b)));
 
     assert(condEntropy(a, c) == dense.condEntropy(a, c));
-    assert(ae(condEntropy(a, b), dense.condEntropy(a, b)));
+    assert(approxEqual(condEntropy(a, b), dense.condEntropy(a, b)));
     assert(condEntropy(c, b) == dense.condEntropy(c, b));
 
-    assert(ae(mutualInfo(a, c), dense.mutualInfo(c, a)));
-    assert(ae(mutualInfo(a, b), dense.mutualInfo(a, b)));
-    assert(ae(mutualInfo(c, b), dense.mutualInfo(c, b)));
+    assert(approxEqual(mutualInfo(a, c), dense.mutualInfo(c, a)));
+    assert(approxEqual(mutualInfo(a, b), dense.mutualInfo(a, b)));
+    assert(approxEqual(mutualInfo(c, b), dense.mutualInfo(c, b)));
 
-    assert(ae(condMutualInfo(a, b, c), dense.condMutualInfo(a, b, c)));
-    assert(ae(condMutualInfo(a, c, b), dense.condMutualInfo(a, c, b)));
-    assert(ae(condMutualInfo(b, c, a), dense.condMutualInfo(b, c, a)));
+    assert(approxEqual(condMutualInfo(a, b, c), dense.condMutualInfo(a, b, c)));
+    assert(approxEqual(condMutualInfo(a, c, b), dense.condMutualInfo(a, c, b)));
+    assert(approxEqual(condMutualInfo(b, c, a), dense.condMutualInfo(b, c, a)));
 
     // Test P-value stuff.
     immutable pDense = dense.mutualInfoPval(dense.mutualInfo(a, b), a.length);
     immutable pNotDense = gTestObs(a, b).p;
-    assert(isClose(pDense, pNotDense));
+    assert(approxEqual(pDense, pNotDense));
 }

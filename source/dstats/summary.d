@@ -59,6 +59,11 @@ import dstats.sort, dstats.base, dstats.alloc;
 
 version(unittest) {
     import std.stdio, dstats.random;
+
+    version(GDC)
+        alias approxEqual = std.math.approxEqual;
+    else
+        alias approxEqual = std.math.isClose;
 }
 
 /**Finds median of an input range in O(N) time on average.  In the case of an
@@ -138,7 +143,7 @@ unittest {
 
         // Off by some tiny fraction in even N case because of division.
         // No idea why, but it's too small a rounding error to care about.
-        assert(isClose(quickRes, accurateRes));
+        assert(approxEqual(quickRes, accurateRes));
     }
 
     // Make sure everything works with lowest common denominator range type.
@@ -158,7 +163,7 @@ unittest {
 
     Count a;
     a.upTo = 100;
-    assert(isClose(median(a), 49.5));
+    assert(approxEqual(median(a), 49.5));
 }
 
 /**Plain old data holder struct for median, median absolute deviation.
@@ -200,8 +205,8 @@ if(doubleInput!(T)) {
 }
 
 unittest {
-    assert(isClose(medianAbsDev([7,1,8,2,8,1,9,2,8,4,5,9].dup).medianAbsDev, 2.5L));
-    assert(isClose(medianAbsDev([8,6,7,5,3,0,999].dup).medianAbsDev, 2.0L));
+    assert(approxEqual(medianAbsDev([7,1,8,2,8,1,9,2,8,4,5,9].dup).medianAbsDev, 2.5L));
+    assert(approxEqual(medianAbsDev([8,6,7,5,3,0,999].dup).medianAbsDev, 2.0L));
 }
 
 /**Computes the interquantile range of data at the given quantile value in O(N)
@@ -278,10 +283,10 @@ if(doubleInput!R) {
 
 unittest {
     // 0 3 5 6 7 8 9
-    assert(isClose(interquantileRange([1,2,3,4,5,6,7,8]), 3.5));
-    assert(isClose(interquantileRange([1,2,3,4,5,6,7,8,9]), 4));
+    assert(approxEqual(interquantileRange([1,2,3,4,5,6,7,8]), 3.5));
+    assert(approxEqual(interquantileRange([1,2,3,4,5,6,7,8,9]), 4));
     assert(interquantileRange([1,9,2,4,3,6,8], 0) == 8);
-    assert(isClose(interquantileRange([8,6,7,5,3,0,9], 0.2), 4.4));
+    assert(approxEqual(interquantileRange([8,6,7,5,3,0,9], 0.2), 4.4));
 }
 
 /**Output range to calculate the mean online.  Getter for mean costs a branch to
@@ -333,7 +338,7 @@ public:
      *     combined.put(i);
      * }
      *
-     * assert(isClose(combined.mean, mean1.mean));
+     * assert(approxEqual(combined.mean, mean1.mean));
      * ---
      */
      void put(typeof(this) rhs) pure nothrow @safe {
@@ -474,7 +479,7 @@ unittest {
     auto foo = map!(to!(uint))(data);
 
     auto result = geometricMean(map!(to!(uint))(data));
-    assert(isClose(result, 2.60517));
+    assert(approxEqual(result, 2.60517));
 
     Mean mean1, mean2, combined;
     foreach(i; 0..5) {
@@ -491,7 +496,7 @@ unittest {
       combined.put(i);
     }
 
-    assert(isClose(combined.mean, mean1.mean),
+    assert(approxEqual(combined.mean, mean1.mean),
         text(combined.mean, "  ", mean1.mean));
     assert(combined.N == mean1.N);
 }
@@ -540,12 +545,12 @@ unittest {
     assert(sum([1,2,3,4,5,6,7,8,9,10][]) == 55);
     assert(sum(filter!"true"([1,2,3,4,5,6,7,8,9,10][])) == 55);
     assert(sum(cast(int[]) [1,2,3,4,5])==15);
-    assert(isClose( sum(cast(int[]) [40.0, 40.1, 5.2]), 85.3));
+    assert(approxEqual( sum(cast(int[]) [40.0, 40.1, 5.2]), 85.3));
     assert(mean(cast(int[]) [1,2,3]).mean == 2);
     assert(mean(cast(int[]) [1.0, 2.0, 3.0]).mean == 2.0);
     assert(mean([1, 2, 5, 10, 17][]).mean == 7);
     assert(mean([1, 2, 5, 10, 17][]).sum == 35);
-    assert(isClose(mean([8,6,7,5,3,0,9,3,6,2,4,3,6][]).mean, 4.769231));
+    assert(approxEqual(mean([8,6,7,5,3,0,9,3,6,2,4,3,6][]).mean, 4.769231));
 
     // Test the OO struct a little, since we're using the new ILP algorithm.
     Mean m;
@@ -566,7 +571,7 @@ unittest {
         }
 
         foreach(ti, elem; res1.tupleof) {
-            assert(isClose(elem, res2.tupleof[ti]));
+            assert(approxEqual(elem, res2.tupleof[ti]));
         }
     }
 }
@@ -755,12 +760,12 @@ if(doubleIterable!(T)) {
 
 unittest {
     auto res = meanStdev(cast(int[]) [3, 1, 4, 5]);
-    assert(isClose(res.stdev, 1.7078));
-    assert(isClose(res.mean, 3.25));
+    assert(approxEqual(res.stdev, 1.7078));
+    assert(approxEqual(res.mean, 3.25));
     res = meanStdev(cast(double[]) [1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0]);
-    assert(isClose(res.stdev, 2.160247));
-    assert(isClose(res.mean, 4));
-    assert(isClose(res.sum, 28));
+    assert(approxEqual(res.stdev, 2.160247));
+    assert(approxEqual(res.mean, 4));
+    assert(approxEqual(res.sum, 28));
 
     MeanSD mean1, mean2, combined;
     foreach(i; 0..5) {
@@ -777,11 +782,11 @@ unittest {
       combined.put(i);
     }
 
-    assert(isClose(combined.mean, mean1.mean));
-    assert(isClose(combined.stdev, mean1.stdev));
+    assert(approxEqual(combined.mean, mean1.mean));
+    assert(approxEqual(combined.stdev, mean1.stdev));
     assert(combined.N == mean1.N);
-    assert(isClose(combined.mean, 4.5));
-    assert(isClose(combined.stdev, 3.027650));
+    assert(approxEqual(combined.mean, 4.5));
+    assert(approxEqual(combined.stdev, 3.027650));
 
     foreach(i; 0..100) {
         // Monte carlo test the unrolled version.
@@ -793,7 +798,7 @@ unittest {
         }
 
         foreach(ti, elem; res1.tupleof) {
-            assert(isClose(elem, res2.tupleof[ti]));
+            assert(approxEqual(elem, res2.tupleof[ti]));
         }
 
         MeanSD resCornerCase;  // Test corner cases where one of the N's is 0.
@@ -831,7 +836,7 @@ unittest {
  * assert(summ.mean == 3);
  * assert(summ.stdev == sqrt(2.5));
  * assert(summ.var == 2.5);
- * assert(isClose(summ.kurtosis, -1.9120));
+ * assert(approxEqual(summ.kurtosis, -1.9120));
  * assert(summ.min == 1);
  * assert(summ.max == 5);
  * assert(summ.sum == 15);
@@ -1001,7 +1006,7 @@ unittest {
     }
 
     foreach(ti, elem; mean1.tupleof) {
-        assert(isClose(elem, combined.tupleof[ti]));
+        assert(approxEqual(elem, combined.tupleof[ti]));
     }
 
     Summary summCornerCase;  // Case where one N is zero.
@@ -1031,9 +1036,9 @@ if(doubleIterable!(T)) {
 
 unittest {
     // Values from Matlab.
-    assert(isClose(kurtosis([1, 1, 1, 1, 10].dup), 0.25));
-    assert(isClose(kurtosis([2.5, 3.5, 4.5, 5.5].dup), -1.36));
-    assert(isClose(kurtosis([1,2,2,2,2,2,100].dup), 2.1657));
+    assert(approxEqual(kurtosis([1, 1, 1, 1, 10].dup), 0.25));
+    assert(approxEqual(kurtosis([2.5, 3.5, 4.5, 5.5].dup), -1.36));
+    assert(approxEqual(kurtosis([1,2,2,2,2,2,100].dup), 2.1657));
 }
 
 /**Skewness is a measure of symmetry of a distribution.  Positive skewness
@@ -1054,14 +1059,14 @@ if(doubleIterable!(T)) {
 
 unittest {
     // Values from Octave.
-    assert(isClose(skewness([1,2,3,4,5].dup), 0));
-    assert(isClose(skewness([3,1,4,1,5,9,2,6,5].dup), 0.5443));
-    assert(isClose(skewness([2,7,1,8,2,8,1,8,2,8,4,5,9].dup), -0.0866));
+    assert(approxEqual(skewness([1,2,3,4,5].dup), 0));
+    assert(approxEqual(skewness([3,1,4,1,5,9,2,6,5].dup), 0.5443));
+    assert(approxEqual(skewness([2,7,1,8,2,8,1,8,2,8,4,5,9].dup), -0.0866));
 
     // Test handling of ranges that are not arrays.
     string[] stringy = ["3", "1", "4", "1", "5", "9", "2", "6", "5"];
     auto intified = map!(to!(int))(stringy);
-    assert(isClose(skewness(intified), 0.5443));
+    assert(approxEqual(skewness(intified), 0.5443));
 }
 
 /**Convenience function.  Puts all elements of data into a Summary struct,
@@ -1196,11 +1201,11 @@ unittest {
 
     size_t pos = 0;
     foreach(elem; z) {
-        assert(isClose(elem, (arr[pos++] - m) / sd));
+        assert(approxEqual(elem, (arr[pos++] - m) / sd));
     }
 
     assert(z.length == 5);
     foreach(i; 0..z.length) {
-        assert(isClose(z[i], (arr[i] - m) / sd));
+        assert(approxEqual(z[i], (arr[i] - m) / sd));
     }
 }

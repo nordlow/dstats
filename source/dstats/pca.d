@@ -45,6 +45,13 @@ import std.range, dstats.base, dstats.alloc, std.numeric, std.stdio, std.math,
     std.algorithm, std.array, dstats.summary, dstats.random, std.conv,
     std.exception, dstats.regress, std.traits;
 
+version(unittest) {
+    version(GDC)
+        alias approxEqual = std.math.approxEqual;
+    else
+        alias approxEqual = std.math.isClose;
+}
+
 /// Result holder
 struct PrincipalComponent {
     /// The projection of the data onto the first principal component.
@@ -217,7 +224,7 @@ private PrincipalComponent firstComponentImpl(Ror)(
         foreach(i; 0..a.length) {
             if(!isFinite(a[i]) || !isFinite(b[i])) {
                 return true;
-            } else if(!isClose(a[i], b[i], opts.relError, opts.absError)) {
+            } else if(!approxEqual(a[i], b[i], opts.relError, opts.absError)) {
                 return false;
             }
         }
@@ -492,7 +499,7 @@ version(unittest) {
     // There are two equally valid answers for PCA that differ only by sign.
     // This tests whether one of them matches the test value.
     bool plusMinusAe(T, U)(T lhs, U rhs) {
-        return isClose(lhs, rhs) || isClose(lhs, map!"-a"(rhs));
+        return approxEqual(lhs, rhs) || approxEqual(lhs, map!"-a"(rhs));
     }
 }
 
