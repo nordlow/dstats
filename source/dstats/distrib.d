@@ -118,7 +118,10 @@ enum SQ2PI = 2.50662827463100050241576528481104525300698674060993831662992;
 version(unittest) {
     import std.stdio, std.random;
 
-    alias std.math.isClose ae;
+    version(GDC)
+        alias ae = std.math.approxEqual;
+    else
+        alias ae = std.math.isClose;
 }
 
 /**Takes a distribution function (CDF or PDF/PMF) as a template argument, and
@@ -147,7 +150,7 @@ double delegate(ParameterTypeTuple!(distrib)[0])
 unittest {
     // Just basically see if this compiles.
     auto stdNormal = parametrize!normalCDF(0, 1);
-    assert(isClose(stdNormal(2.5), normalCDF(2.5, 0, 1)));
+    assert(ae(stdNormal(2.5), normalCDF(2.5, 0, 1)));
 }
 
 ///
@@ -183,7 +186,7 @@ ParamFunctor!(distrib) paramFunctor(alias distrib)
 unittest {
     // Just basically see if this compiles.
     auto stdNormal = paramFunctor!normalCDF(0, 1);
-    assert(isClose(stdNormal(2.5), normalCDF(2.5, 0, 1)));
+    assert(ae(stdNormal(2.5), normalCDF(2.5, 0, 1)));
 }
 
 ///
@@ -218,7 +221,7 @@ double poissonPMF(ulong k, double lambda) {
 }
 
 unittest {
-    assert(isClose(poissonPMF(1, .1), 0.09048374180));
+    assert(ae(poissonPMF(1, .1), 0.09048374180));
 }
 
 enum POISSON_NORMAL = 1UL << 12;  // Where to switch to normal approx.
@@ -254,13 +257,13 @@ unittest {
         return ret;
     }
 
-    assert(isClose(poissonCDF(1, 0.5), pmfSum(1, 0.5)));
-    assert(isClose(poissonCDF(3, 0.7), pmfSum(3, 0.7)));
+    assert(ae(poissonCDF(1, 0.5), pmfSum(1, 0.5)));
+    assert(ae(poissonCDF(3, 0.7), pmfSum(3, 0.7)));
 
     // Absurdly huge values:  Test normal approximation.
     // Values from R.
     double ans = poissonCDF( (1UL << 50) - 10_000_000, 1UL << 50);
-    assert(isClose(ans, 0.38284272493));
+    assert(ae(ans, 0.38284272493));
 
     // Make sure cutoff is reasonable, i.e. make sure gamma incomplete branch
     // and normal branch get roughly the same answer near the cutoff.
@@ -304,13 +307,13 @@ unittest {
         return ret;
     }
 
-    assert(isClose(poissonCDFR(1, 0.5), 1 - pmfSum(0, 0.5)));
-    assert(isClose(poissonCDFR(3, 0.7), 1 - pmfSum(2, 0.7)));
+    assert(ae(poissonCDFR(1, 0.5), 1 - pmfSum(0, 0.5)));
+    assert(ae(poissonCDFR(3, 0.7), 1 - pmfSum(2, 0.7)));
 
     // Absurdly huge value to test normal approximation.
     // Values from R.
     double ans = poissonCDFR( (1UL << 50) - 10_000_000, 1UL << 50);
-    assert(isClose(ans, 0.61715728645));
+    assert(ae(ans, 0.61715728645));
 
     // Make sure cutoff is reasonable, i.e. make sure gamma incomplete branch
     // and normal branch get roughly the same answer near the cutoff.
@@ -384,8 +387,8 @@ double binomialPMF(ulong k, ulong n, double p) {
 }
 
 unittest {
-    assert(isClose(binomialPMF(0, 10, .5), cast(double) 1/1024));
-    assert(isClose(binomialPMF(100, 1000, .11), 0.02485643724));
+    assert(ae(binomialPMF(0, 10, .5), cast(double) 1/1024));
+    assert(ae(binomialPMF(100, 1000, .11), 0.02485643724));
 }
 
 // Determines what value of n we switch to normal approximation at b/c
@@ -435,26 +438,26 @@ double binomialCDF(ulong k, ulong n, double p) {
 }
 
 unittest {
-    assert(isClose(binomialCDF(10, 100, .11), 0.4528744401));
-    assert(isClose(binomialCDF(15, 100, .12), 0.8585510507));
-    assert(isClose(binomialCDF(50, 1000, .04), 0.95093595463));
-    assert(isClose(binomialCDF(7600, 15000, .5), .9496193045414));
-    assert(isClose(binomialCDF(0, 10, 0.2), 0.10737418240));
+    assert(ae(binomialCDF(10, 100, .11), 0.4528744401));
+    assert(ae(binomialCDF(15, 100, .12), 0.8585510507));
+    assert(ae(binomialCDF(50, 1000, .04), 0.95093595463));
+    assert(ae(binomialCDF(7600, 15000, .5), .9496193045414));
+    assert(ae(binomialCDF(0, 10, 0.2), 0.10737418240));
 
     // Absurdly huge numbers:
     {
         ulong k = (1UL << 60) - 100_000_000;
         ulong n = 1UL << 61;
-        assert(isClose(binomialCDF(k, n, 0.5L), 0.44760727220));
+        assert(ae(binomialCDF(k, n, 0.5L), 0.44760727220));
     }
 
     // Test Poisson branch.
     double poisAns = binomialCDF(85, 1UL << 26, 1.49e-6);
-    assert(isClose(poisAns, 0.07085342045));
+    assert(ae(poisAns, 0.07085342045));
 
     // Test poissonCDFR branch.
     poisAns = binomialCDF( (1UL << 25) - 100, 1UL << 25, 0.9999975L);
-    assert(isClose(poisAns, 0.04713337074));
+    assert(ae(poisAns, 0.04713337074));
 
     // Make sure cutoff is reasonable:  Just below it, we should get similar
     // results for normal, exact.
@@ -515,31 +518,31 @@ double binomialCDFR(ulong k, ulong n, double p) {
 
 unittest {
     // Values from R, Maxima.
-    assert(isClose(binomialCDF(10, 100, .11), 1 -
+    assert(ae(binomialCDF(10, 100, .11), 1 -
                       binomialCDFR(11, 100, .11)));
-    assert(isClose(binomialCDF(15, 100, .12), 1 -
+    assert(ae(binomialCDF(15, 100, .12), 1 -
                        binomialCDFR(16, 100, .12)));
-    assert(isClose(binomialCDF(50, 1000, .04), 1 -
+    assert(ae(binomialCDF(50, 1000, .04), 1 -
                        binomialCDFR(51, 1000, .04)));
-    assert(isClose(binomialCDF(7600, 15000, .5), 1 -
+    assert(ae(binomialCDF(7600, 15000, .5), 1 -
                        binomialCDFR(7601, 15000, .5)));
-    assert(isClose(binomialCDF(9, 10, 0.3), 1 -
+    assert(ae(binomialCDF(9, 10, 0.3), 1 -
                        binomialCDFR(10, 10, 0.3)));
 
     // Absurdly huge numbers, test normal branch.
     {
         ulong k = (1UL << 60) - 100_000_000;
         ulong n = 1UL << 61;
-        assert(isClose(binomialCDFR(k, n, 0.5L), 0.55239272780));
+        assert(ae(binomialCDFR(k, n, 0.5L), 0.55239272780));
     }
 
     // Test Poisson inversion branch.
     double poisRes = binomialCDFR((1UL << 25) - 70, 1UL << 25, 0.9999975L);
-    assert(isClose(poisRes, 0.06883929446));
+    assert(ae(poisRes, 0.06883929446));
 
     // Test Poisson branch.
     poisRes = binomialCDFR(350, 1UL << 25, 1e-5);
-    assert(isClose(poisRes, 0.22192455952));
+    assert(ae(poisRes, 0.22192455952));
 
     // Make sure cutoff is reasonable:  Just below it, we should get similar
     // results for normal, exact.
@@ -631,9 +634,9 @@ in {
 }
 
 unittest {
-    assert(isClose(hypergeometricPMF(5, 10, 10, 10), 0.34371820130));
-    assert(isClose(hypergeometricPMF(9, 12, 10, 15), 0.27089783282));
-    assert(isClose(hypergeometricPMF(9, 100, 100, 15), 0.15500003129));
+    assert(ae(hypergeometricPMF(5, 10, 10, 10), 0.34371820130));
+    assert(ae(hypergeometricPMF(9, 12, 10, 15), 0.27089783282));
+    assert(ae(hypergeometricPMF(9, 100, 100, 15), 0.15500003129));
 }
 
 /**P(X <= x), where X is random variable.  Uses either direct summation,
@@ -717,21 +720,21 @@ double hypergeometricCDF(long x, long n1, long n2, long n) {
 unittest {
     // Values from R and the Maxima CAS.
     // Test exact branch, including reversing, complementing.
-    assert(isClose(hypergeometricCDF(5, 10, 10, 10), 0.67185910065));
-    assert(isClose(hypergeometricCDF(3, 11, 15, 10), 0.27745322385));
-    assert(isClose(hypergeometricCDF(18, 27, 31, 35), 0.88271714656));
-    assert(isClose(hypergeometricCDF(21, 29, 31, 35), 0.99229253618));
+    assert(ae(hypergeometricCDF(5, 10, 10, 10), 0.67185910065));
+    assert(ae(hypergeometricCDF(3, 11, 15, 10), 0.27745322385));
+    assert(ae(hypergeometricCDF(18, 27, 31, 35), 0.88271714656));
+    assert(ae(hypergeometricCDF(21, 29, 31, 35), 0.99229253618));
 
     // Normal branch.
-    assert(isClose(hypergeometricCDF(501, 2000, 1000, 800), 0.002767073));
-    assert(isClose(hypergeometricCDF(565, 2000, 1000, 800), 0.9977068));
-    assert(isClose(hypergeometricCDF(2700, 10000, 20000, 8000), 0.825652));
+    assert(ae(hypergeometricCDF(501, 2000, 1000, 800), 0.002767073));
+    assert(ae(hypergeometricCDF(565, 2000, 1000, 800), 0.9977068));
+    assert(ae(hypergeometricCDF(2700, 10000, 20000, 8000), 0.825652));
 
     // Binomial branch.  One for each transformation.
-    assert(isClose(hypergeometricCDF(110, 5000, 7000, 239), 0.9255627));
-    assert(isClose(hypergeometricCDF(19840, 2950998, 12624, 19933), 0.2020618));
-    assert(isClose(hypergeometricCDF(130, 24195, 52354, 295), 0.9999973));
-    assert(isClose(hypergeometricCDF(103, 901, 49014, 3522), 0.999999));
+    assert(ae(hypergeometricCDF(110, 5000, 7000, 239), 0.9255627));
+    assert(ae(hypergeometricCDF(19840, 2950998, 12624, 19933), 0.2020618));
+    assert(ae(hypergeometricCDF(130, 24195, 52354, 295), 0.9999973));
+    assert(ae(hypergeometricCDF(103, 901, 49014, 3522), 0.999999));
 }
 
 ///P(X >= x), where X is random variable.
@@ -745,13 +748,13 @@ double hypergeometricCDFR(ulong x, ulong n1, ulong n2, ulong n) {
 
 unittest {
     //Reverses n1, n2 and subtracts x from n to get mirror image.
-    assert(isClose(hypergeometricCDF(5,10,10,10),
+    assert(ae(hypergeometricCDF(5,10,10,10),
                        hypergeometricCDFR(5,10,10,10)));
-    assert(isClose(hypergeometricCDF(3, 11, 15, 10),
+    assert(ae(hypergeometricCDF(3, 11, 15, 10),
                        hypergeometricCDFR(7, 15, 11, 10)));
-    assert(isClose(hypergeometricCDF(18, 27, 31, 35),
+    assert(ae(hypergeometricCDF(18, 27, 31, 35),
                        hypergeometricCDFR(17, 31, 27, 35)));
-    assert(isClose(hypergeometricCDF(21, 29, 31, 35),
+    assert(ae(hypergeometricCDF(21, 29, 31, 35),
                        hypergeometricCDFR(14, 31, 29, 35)));
 }
 
@@ -802,8 +805,8 @@ double chiSquarePDF(double x, double v) {
 }
 
 unittest {
-    assert( isClose(chiSquarePDF(1, 2), 0.3032653));
-    assert( isClose(chiSquarePDF(2, 1), 0.1037769));
+    assert( ae(chiSquarePDF(1, 2), 0.3032653));
+    assert( ae(chiSquarePDF(2, 1), 0.1037769));
 }
 
 /**
@@ -882,7 +885,7 @@ double invChiSquareCDFR(double v, double p) {
 
 unittest {
     assert(feqrel(chiSquareCDFR(invChiSquareCDFR(3.5, 0.1), 3.5), 0.1)>=double.mant_dig-3);
-    assert(isClose(
+    assert(ae(
         chiSquareCDF(0.4L, 19.02L) + chiSquareCDFR(0.4L, 19.02L), 1.0L));
     assert(ae( invChiSquareCDFR( 3, chiSquareCDFR(1, 3)), 1));
 
@@ -905,7 +908,7 @@ double normalPDF(double x, double mean = 0, double sd = 1) {
 }
 
 unittest {
-    assert(isClose(normalPDF(3, 1, 2), 0.1209854));
+    assert(ae(normalPDF(3, 1, 2), 0.1209854));
 }
 
 ///P(X < x) for normal distribution where X is random var.
@@ -920,9 +923,9 @@ double normalCDF(double x, double mean = 0, double stdev = 1) {
 }
 
 unittest {
-    assert(isClose(normalCDF(2), .9772498));
-    assert(isClose(normalCDF(-2), .02275013));
-    assert(isClose(normalCDF(1.3), .90319951));
+    assert(ae(normalCDF(2), .9772498));
+    assert(ae(normalCDF(-2), .02275013));
+    assert(ae(normalCDF(1.3), .90319951));
 }
 
 ///P(X > x) for normal distribution where X is random var.
@@ -936,7 +939,7 @@ double normalCDFR(double x, double mean = 0, double stdev = 1) {
 unittest {
     //Should be essentially a mirror image of normalCDF.
     for(double i = -8; i < 8; i += .1) {
-        assert(isClose(normalCDF(i), normalCDFR(-i)));
+        assert(ae(normalCDF(i), normalCDFR(-i)));
     }
 }
 
@@ -985,7 +988,7 @@ unittest {
         double sd = uniform(1.0L, 3.0L);
         double inv = invNormalCDF(x, mean, sd);
         double rec = normalCDF(inv, mean, sd);
-        assert(isClose(x, rec));
+        assert(ae(x, rec));
     }
 }
 
@@ -1002,8 +1005,8 @@ double logNormalPDF(double x, double mu = 0, double sigma = 1) {
 
 unittest {
     // Values from R.
-    assert(isClose(logNormalPDF(1, 0, 1), 0.3989423));
-    assert(isClose(logNormalPDF(2, 2, 3), 0.06047173));
+    assert(ae(logNormalPDF(1, 0, 1), 0.3989423));
+    assert(ae(logNormalPDF(2, 2, 3), 0.06047173));
 }
 
 ///
@@ -1014,8 +1017,8 @@ double logNormalCDF(double x, double mu = 0, double sigma = 1) {
 }
 
 unittest {
-    assert(isClose(logNormalCDF(4), 0.9171715));
-    assert(isClose(logNormalCDF(1, -2, 3), 0.7475075));
+    assert(ae(logNormalCDF(4), 0.9171715));
+    assert(ae(logNormalCDF(1, -2, 3), 0.7475075));
 }
 
 ///
@@ -1026,8 +1029,8 @@ double logNormalCDFR(double x, double mu = 0, double sigma = 1) {
 }
 
 unittest {
-    assert(isClose(logNormalCDF(4) + logNormalCDFR(4), 1));
-    assert(isClose(logNormalCDF(1, -2, 3) + logNormalCDFR(1, -2, 3), 1));
+    assert(ae(logNormalCDF(4) + logNormalCDFR(4), 1));
+    assert(ae(logNormalCDF(1, -2, 3) + logNormalCDFR(1, -2, 3), 1));
 }
 
 ///
@@ -1043,7 +1046,7 @@ double weibullPDF(double x, double shape, double scale = 1) {
 }
 
 unittest {
-    assert(isClose(weibullPDF(2,1,3), 0.1711390));
+    assert(ae(weibullPDF(2,1,3), 0.1711390));
 }
 
 ///
@@ -1056,7 +1059,7 @@ double weibullCDF(double x, double shape, double scale = 1) {
 }
 
 unittest {
-    assert(isClose(weibullCDF(2, 3, 4), 0.1175031));
+    assert(ae(weibullCDF(2, 3, 4), 0.1175031));
 }
 
 ///
@@ -1069,7 +1072,7 @@ double weibullCDFR(double x, double shape, double scale = 1) {
 }
 
 unittest {
-    assert(isClose(weibullCDF(2, 3, 4) + weibullCDFR(2, 3, 4), 1));
+    assert(ae(weibullCDF(2, 3, 4) + weibullCDFR(2, 3, 4), 1));
 }
 
 // For K-S tests in dstats.random.  Todo:  Flesh out.
@@ -1110,15 +1113,15 @@ double studentsTCDFR(double t, double df)   {
 }
 
 unittest {
-    assert(isClose(studentsTPDF(1, 1), 0.1591549));
-    assert(isClose(studentsTPDF(3, 10), 0.0114055));
-    assert(isClose(studentsTPDF(-4, 5), 0.005123727));
+    assert(ae(studentsTPDF(1, 1), 0.1591549));
+    assert(ae(studentsTPDF(3, 10), 0.0114055));
+    assert(ae(studentsTPDF(-4, 5), 0.005123727));
 
-    assert(isClose(studentsTCDF(1, 1), 0.75));
-    assert(isClose(studentsTCDF(1.061, 2), 0.8));
-    assert(isClose(studentsTCDF(5.959, 5), 0.9995));
-    assert(isClose(studentsTCDF(.667, 20), 0.75));
-    assert(isClose(studentsTCDF(2.353, 3), 0.95));
+    assert(ae(studentsTCDF(1, 1), 0.75));
+    assert(ae(studentsTCDF(1.061, 2), 0.8));
+    assert(ae(studentsTCDF(5.959, 5), 0.9995));
+    assert(ae(studentsTCDF(.667, 20), 0.75));
+    assert(ae(studentsTCDF(2.353, 3), 0.95));
 }
 
 /******************************************
@@ -1169,11 +1172,11 @@ unittest {
     // in the last decimal places. However, they are helpful as a sanity check.
 
     //  Microsoft Excel 2003 gives TINV(2*(1-0.995), 10) == 3.16927267160917
-    assert(isClose(invStudentsTCDF(0.995, 10), 3.169_272_67L));
-    assert(isClose(invStudentsTCDF(0.6, 8), 0.261_921_096_769_043L));
-    assert(isClose(invStudentsTCDF(0.4, 18), -0.257_123_042_655_869L));
-    assert(isClose(studentsTCDF(invStudentsTCDF(0.4L, 18), 18), .4L));
-    assert(isClose(studentsTCDF( invStudentsTCDF(0.9L, 11), 11), 0.9L));
+    assert(ae(invStudentsTCDF(0.995, 10), 3.169_272_67L));
+    assert(ae(invStudentsTCDF(0.6, 8), 0.261_921_096_769_043L));
+    assert(ae(invStudentsTCDF(0.4, 18), -0.257_123_042_655_869L));
+    assert(ae(studentsTCDF(invStudentsTCDF(0.4L, 18), 18), .4L));
+    assert(ae(studentsTCDF( invStudentsTCDF(0.9L, 11), 11), 0.9L));
 }
 
 /**
@@ -1268,7 +1271,7 @@ unittest {
       assert(fabs(invFisherCDFR(8, 34, 0.2) - 1.48267037661408L)< 0.0000000005L);
       assert(fabs(invFisherCDFR(4, 16, 0.008) - 5.043_537_593_48596L)< 0.0000000005L);
       // This one used to fail because of a bug in the definition of MINLOG.
-      assert(isClose(fisherCDFR(invFisherCDFR(4,16, 0.008), 4, 16), 0.008));
+      assert(ae(fisherCDFR(invFisherCDFR(4,16, 0.008), 4, 16), 0.008));
 }
 
 ///
@@ -1281,8 +1284,8 @@ double negBinomPMF(ulong k, ulong n, double p) {
 
 unittest {
     // Values from R.
-    assert(isClose(negBinomPMF(1, 8, 0.7), 0.1383552));
-    assert(isClose(negBinomPMF(3, 2, 0.5), 0.125));
+    assert(ae(negBinomPMF(1, 8, 0.7), 0.1383552));
+    assert(ae(negBinomPMF(3, 2, 0.5), 0.125));
 }
 
 
@@ -1318,8 +1321,8 @@ double negBinomCDF(ulong k, ulong n, double p ) {
 
 unittest {
     // Values from R.
-    assert(isClose(negBinomCDF(50, 50, 0.5), 0.5397946));
-    assert(isClose(negBinomCDF(2, 1, 0.5), 0.875));
+    assert(ae(negBinomCDF(50, 50, 0.5), 0.5397946));
+    assert(ae(negBinomCDF(2, 1, 0.5), 0.875));
 }
 
 /**Probability that k or more failures precede the nth success.*/
@@ -1333,7 +1336,7 @@ double negBinomCDFR(ulong k, ulong n, double p) {
 }
 
 unittest {
-    assert(isClose(negBinomCDFR(10, 20, 0.5), 1 - negBinomCDF(9, 20, 0.5)));
+    assert(ae(negBinomCDFR(10, 20, 0.5), 1 - negBinomCDF(9, 20, 0.5)));
 }
 
 ///
@@ -1453,12 +1456,12 @@ double invExponentialCDF(double p, double lambda) {
 
 unittest {
     // Values from R.
-    assert(isClose(exponentialPDF(0.75, 3), 0.3161977));
-    assert(isClose(exponentialCDF(0.75, 3), 0.8946008));
-    assert(isClose(exponentialCDFR(0.75, 3), 0.1053992));
+    assert(ae(exponentialPDF(0.75, 3), 0.3161977));
+    assert(ae(exponentialCDF(0.75, 3), 0.8946008));
+    assert(ae(exponentialCDFR(0.75, 3), 0.1053992));
 
-    assert(isClose(invExponentialCDF(0.8, 2), 0.804719));
-    assert(isClose(invExponentialCDF(0.2, 7), 0.03187765));
+    assert(ae(invExponentialCDF(0.8, 2), 0.804719));
+    assert(ae(invExponentialCDF(0.2, 7), 0.03187765));
 }
 
 ///
@@ -1510,17 +1513,17 @@ double invGammaCDFR(double p, double rate, double shape) {
 }
 
 unittest {
-    assert(isClose(gammaPDF(1, 2, 5), 0.1804470));
-    assert(isClose(gammaPDF(0.5, 8, 4), 1.562935));
-    assert(isClose(gammaPDF(3, 2, 7), 0.3212463));
-    assert(isClose(gammaCDF(1, 2, 5), 0.05265302));
-    assert(isClose(gammaCDFR(1, 2, 5), 0.947347));
+    assert(ae(gammaPDF(1, 2, 5), 0.1804470));
+    assert(ae(gammaPDF(0.5, 8, 4), 1.562935));
+    assert(ae(gammaPDF(3, 2, 7), 0.3212463));
+    assert(ae(gammaCDF(1, 2, 5), 0.05265302));
+    assert(ae(gammaCDFR(1, 2, 5), 0.947347));
 
     double inv = invGammaCDFR(0.78, 2, 1);
-    assert(isClose(gammaCDFR(inv, 2, 1), 0.78));
+    assert(ae(gammaCDFR(inv, 2, 1), 0.78));
 
     double inv2 = invGammaCDF(0.78, 2, 1);
-    assert(isClose(gammaCDF(inv2, 2, 1), 0.78));
+    assert(ae(gammaCDF(inv2, 2, 1), 0.78));
 }
 
 ///
@@ -1562,17 +1565,17 @@ double invBetaCDF(double p, double alpha, double beta) {
 
 unittest {
     // Values from R.
-    assert(isClose(betaPDF(0.3, 2, 3), 1.764));
-    assert(isClose(betaPDF(0.78, 0.9, 4), 0.03518569));
+    assert(ae(betaPDF(0.3, 2, 3), 1.764));
+    assert(ae(betaPDF(0.78, 0.9, 4), 0.03518569));
 
-    assert(isClose(betaCDF(0.3, 2, 3), 0.3483));
-    assert(isClose(betaCDF(0.78, 0.9, 4), 0.9980752));
+    assert(ae(betaCDF(0.3, 2, 3), 0.3483));
+    assert(ae(betaCDF(0.78, 0.9, 4), 0.9980752));
 
-    assert(isClose(betaCDFR(0.3, 2, 3), 0.6517));
-    assert(isClose(betaCDFR(0.78, 0.9, 4), 0.001924818));
+    assert(ae(betaCDFR(0.3, 2, 3), 0.6517));
+    assert(ae(betaCDFR(0.78, 0.9, 4), 0.001924818));
 
-    assert(isClose(invBetaCDF(0.3483, 2, 3), 0.3));
-    assert(isClose(invBetaCDF(0.9980752, 0.9, 4), 0.78));
+    assert(ae(invBetaCDF(0.3483, 2, 3), 0.3));
+    assert(ae(invBetaCDF(0.9980752, 0.9, 4), 0.78));
 }
 
 /**
@@ -1615,11 +1618,11 @@ is(ElementType!A : double)) {
 
 unittest {
     // Test against beta
-    assert(isClose(dirichletPDF([0.1, 0.9], [2, 3]), betaPDF(0.1, 2, 3)));
+    assert(ae(dirichletPDF([0.1, 0.9], [2, 3]), betaPDF(0.1, 2, 3)));
 
     // A few values from R's gregmisc package
-    assert(isClose(dirichletPDF([0.1, 0.2, 0.7], [4, 5, 6]), 1.356672));
-    assert(isClose(dirichletPDF([0.8, 0.05, 0.15], [8, 5, 6]), 0.04390199));
+    assert(ae(dirichletPDF([0.1, 0.2, 0.7], [4, 5, 6]), 1.356672));
+    assert(ae(dirichletPDF([0.8, 0.05, 0.15], [8, 5, 6]), 0.04390199));
 }
 
 ///
@@ -1632,8 +1635,8 @@ double cauchyPDF(double X, double X0 = 0, double gamma = 1) {
 }
 
 unittest {
-    assert(isClose(cauchyPDF(5), 0.01224269));
-    assert(isClose(cauchyPDF(2), 0.06366198));
+    assert(ae(cauchyPDF(5), 0.01224269));
+    assert(ae(cauchyPDF(2), 0.06366198));
 }
 
 
@@ -1646,8 +1649,8 @@ double cauchyCDF(double X, double X0 = 0, double gamma = 1) {
 
 unittest {
     // Values from R
-    assert(isClose(cauchyCDF(-10), 0.03172552));
-    assert(isClose(cauchyCDF(1), 0.75));
+    assert(ae(cauchyCDF(-10), 0.03172552));
+    assert(ae(cauchyCDF(1), 0.75));
 }
 
 ///
@@ -1659,8 +1662,8 @@ double cauchyCDFR(double X, double X0 = 0, double gamma = 1) {
 
 unittest {
     // Values from R
-    assert(isClose(1 - cauchyCDFR(-10), 0.03172552));
-    assert(isClose(1 - cauchyCDFR(1), 0.75));
+    assert(ae(1 - cauchyCDFR(-10), 0.03172552));
+    assert(ae(1 - cauchyCDFR(1), 0.75));
 }
 
 ///
@@ -1673,9 +1676,9 @@ double invCauchyCDF(double p, double X0 = 0, double gamma = 1) {
 
 unittest {
     // cauchyCDF already tested.  Just make sure this is the inverse.
-    assert(isClose(invCauchyCDF(cauchyCDF(.5)), .5));
-    assert(isClose(invCauchyCDF(cauchyCDF(.99)), .99));
-    assert(isClose(invCauchyCDF(cauchyCDF(.03)), .03));
+    assert(ae(invCauchyCDF(cauchyCDF(.5)), .5));
+    assert(ae(invCauchyCDF(cauchyCDF(.99)), .99));
+    assert(ae(invCauchyCDF(cauchyCDF(.03)), .03));
 }
 
 // For K-S tests in dstats.random.  To be fleshed out later.  Intentionally
@@ -1693,8 +1696,8 @@ double laplacePDF(double x, double mu = 0, double b = 1) {
 
 unittest {
     // Values from Maxima.
-    assert(isClose(laplacePDF(3, 2, 1), 0.18393972058572));
-    assert(isClose(laplacePDF(-8, 6, 7), 0.0096668059454723));
+    assert(ae(laplacePDF(3, 2, 1), 0.18393972058572));
+    assert(ae(laplacePDF(-8, 6, 7), 0.0096668059454723));
 }
 
 ///
@@ -1708,9 +1711,9 @@ double laplaceCDF(double X, double mu = 0, double b = 1) {
 
 unittest {
     // Values from Octave.
-    assert(isClose(laplaceCDF(5), 0.9963));
-    assert(isClose(laplaceCDF(-3.14), .021641));
-    assert(isClose(laplaceCDF(0.012), 0.50596));
+    assert(ae(laplaceCDF(5), 0.9963));
+    assert(ae(laplaceCDF(-3.14), .021641));
+    assert(ae(laplaceCDF(0.012), 0.50596));
 }
 
 ///
@@ -1724,9 +1727,9 @@ double laplaceCDFR(double X, double mu = 0, double b = 1) {
 
 unittest {
     // Values from Octave.
-    assert(isClose(1 - laplaceCDFR(5), 0.9963));
-    assert(isClose(1 - laplaceCDFR(-3.14), .021641));
-    assert(isClose(1 - laplaceCDFR(0.012), 0.50596));
+    assert(ae(1 - laplaceCDFR(5), 0.9963));
+    assert(ae(1 - laplaceCDFR(-3.14), .021641));
+    assert(ae(1 - laplaceCDFR(0.012), 0.50596));
 }
 
 ///
@@ -1740,8 +1743,8 @@ double invLaplaceCDF(double p, double mu = 0, double b = 1) {
 }
 
 unittest {
-    assert(isClose(invLaplaceCDF(0.012), -3.7297));
-    assert(isClose(invLaplaceCDF(0.82), 1.0217));
+    assert(ae(invLaplaceCDF(0.012), -3.7297));
+    assert(ae(invLaplaceCDF(0.82), 1.0217));
 }
 
 double kolmDist()(double x) {
@@ -1781,8 +1784,8 @@ double kolmogorovDistrib(immutable double x) {
 }
 
 unittest {
-    assert(isClose(1 - kolmogorovDistrib(.75), 0.627167));
-    assert(isClose(1 - kolmogorovDistrib(.5), 0.9639452436));
-    assert(isClose(1 - kolmogorovDistrib(.9), 0.39273070));
-    assert(isClose(1 - kolmogorovDistrib(1.2), 0.112249666));
+    assert(ae(1 - kolmogorovDistrib(.75), 0.627167));
+    assert(ae(1 - kolmogorovDistrib(.5), 0.9639452436));
+    assert(ae(1 - kolmogorovDistrib(.9), 0.39273070));
+    assert(ae(1 - kolmogorovDistrib(1.2), 0.112249666));
 }
