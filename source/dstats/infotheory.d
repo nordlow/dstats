@@ -47,7 +47,10 @@ version(unittest) {
     version(GDC)
         alias approxEqual = std.math.approxEqual;
     else
-        alias approxEqual = std.math.isClose;
+        bool approxEqual(T, U, V)(T lhs, U rhs, V maxRelDiff = 1e-2, V maxAbsDiff = 1e-5)
+        {
+            return std.math.isClose(lhs, rhs, maxRelDiff, maxAbsDiff); // mimic old sloppy approxEqual for now
+        }
 }
 
 /**This function calculates the Shannon entropy of a forward range that is

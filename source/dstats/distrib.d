@@ -121,7 +121,10 @@ version(unittest) {
     version(GDC)
         alias approxEqual = std.math.approxEqual;
     else
-        alias approxEqual = std.math.isClose;
+        bool approxEqual(T, U)(T lhs, U rhs)
+        {
+            return std.math.isClose(lhs, rhs, 1e-2, 1e-5); // mimic old sloppy approxEqual for now
+        }
 }
 
 /**Takes a distribution function (CDF or PDF/PMF) as a template argument, and
@@ -1120,6 +1123,7 @@ unittest {
     assert(approxEqual(studentsTCDF(1, 1), 0.75));
     assert(approxEqual(studentsTCDF(1.061, 2), 0.8));
     assert(approxEqual(studentsTCDF(5.959, 5), 0.9995));
+    debug writeln(studentsTCDF(.667, 20));
     assert(approxEqual(studentsTCDF(.667, 20), 0.75));
     assert(approxEqual(studentsTCDF(2.353, 3), 0.95));
 }
