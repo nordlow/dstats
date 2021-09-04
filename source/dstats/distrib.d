@@ -1123,7 +1123,6 @@ unittest {
     assert(approxEqual(studentsTCDF(1, 1), 0.75));
     assert(approxEqual(studentsTCDF(1.061, 2), 0.8));
     assert(approxEqual(studentsTCDF(5.959, 5), 0.9995));
-    debug writeln(studentsTCDF(.667, 20));
     assert(approxEqual(studentsTCDF(.667, 20), 0.75));
     assert(approxEqual(studentsTCDF(2.353, 3), 0.95));
 }
