@@ -42,6 +42,10 @@ import std.math, std.mathspecial, std.traits, std.typecons, std.algorithm,
 
 import dstats.alloc, dstats.sort;
 
+version(unittest) {
+    import std.stdio, std.random;
+}
+
 // Returns the number of dimensions in an array T.
 package template nDims(T)
 {
@@ -59,14 +63,6 @@ version(unittest)
 {
     static assert(nDims!(uint[]) == 1);
     static assert(nDims!(float[][]) == 2);
-
-    static if (__VERSION__ < 2096)
-        alias approxEqual = std.math.approxEqual;
-    else
-        bool approxEqual(T, U, V)(T lhs, U rhs, V maxRelDiff = 1e-2, V maxAbsDiff = 1e-5)
-        {
-            return std.math.isClose(lhs, rhs, maxRelDiff, maxAbsDiff); // mimic old sloppy approxEqual for now
-        }
 }
 
 import std.string : strip;

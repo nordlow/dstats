@@ -59,14 +59,6 @@ import dstats.sort, dstats.base, dstats.alloc;
 
 version(unittest) {
     import std.stdio, dstats.random;
-
-    static if (__VERSION__ < 2096)
-        alias approxEqual = std.math.approxEqual;
-    else
-        bool approxEqual(T, U, V)(T lhs, U rhs, V maxRelDiff = 1e-2, V maxAbsDiff = 1e-5)
-        {
-            return std.math.isClose(lhs, rhs, maxRelDiff, maxAbsDiff); // mimic old sloppy approxEqual for now
-        }
 }
 
 /**Finds median of an input range in O(N) time on average.  In the case of an

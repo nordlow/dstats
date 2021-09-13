@@ -40,14 +40,6 @@ import  dstats.alloc, dstats.base, dstats.summary;
 
 version(unittest) {
     import dstats.random, std.stdio;
-
-    static if (__VERSION__ < 2096)
-        alias approxEqual = std.math.approxEqual;
-    else
-        bool approxEqual(T, U, V)(T lhs, U rhs, V maxRelDiff = 1e-2, V maxAbsDiff = 1e-5)
-        {
-            return std.math.isClose(lhs, rhs, maxRelDiff, maxAbsDiff); // mimic old sloppy approxEqual for now
-        }
 }
 
 /**Estimates densities in the 1-dimensional case.  The 1-D case is special

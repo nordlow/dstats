@@ -45,16 +45,6 @@ import std.range, dstats.base, dstats.alloc, std.numeric, std.stdio, std.math,
     std.algorithm, std.array, dstats.summary, dstats.random, std.conv,
     std.exception, dstats.regress, std.traits;
 
-version(unittest) {
-    static if (__VERSION__ < 2096)
-        alias approxEqual = std.math.approxEqual;
-    else
-        bool approxEqual(T, U, V)(T lhs, U rhs, V maxRelDiff = 1e-2, V maxAbsDiff = 1e-5)
-        {
-            return std.math.isClose(lhs, rhs, maxRelDiff, maxAbsDiff); // mimic old sloppy approxEqual for now
-        }
-}
-
 /// Result holder
 struct PrincipalComponent {
     /// The projection of the data onto the first principal component.
