@@ -217,7 +217,7 @@ private PrincipalComponent firstComponentImpl(Ror)(
         foreach(i; 0..a.length) {
             if(!isFinite(a[i]) || !isFinite(b[i])) {
                 return true;
-            } else if(!isClose2(a[i], b[i], opts.relError, opts.absError)) {
+            } else if(!isClose(a[i], b[i], opts.relError, opts.absError)) {
                 return false;
             }
         }
@@ -491,8 +491,9 @@ private double[][] transposeDup(Ror)(Ror data, RegionAllocator alloc) {
 version(unittest) {
     // There are two equally valid answers for PCA that differ only by sign.
     // This tests whether one of them matches the test value.
-    bool plusMinusAe(T, U)(T lhs, U rhs) {
-        return isClose2(lhs, rhs) || isClose2(lhs, map!"-a"(rhs));
+    bool plusMinusAe(T, U)(T lhs, U rhs, string file = __FILE__, uint line = __LINE__) {
+        // writefln(file ~ "(" ~ line.to!string ~ ",1): Debug: [%(%.12f, %)]", lhs);
+        return isClose(lhs, rhs) || isClose(lhs, map!"-a"(rhs));
     }
 }
 
@@ -507,14 +508,14 @@ unittest {
     auto mat = getMat();
     auto allComps = firstNComponents(mat, 3);
 
-    assert(plusMinusAe(allComps[0].x, [1.19, -5.11, -0.537, 4.45]));
-    assert(plusMinusAe(allComps[0].rotation, [-0.314, 0.269, -0.584, -0.698]));
+    assert(plusMinusAe(allComps[0].x, [-1.190309611023, 5.106254623274, 0.536882440674, -4.452827452925]));
+    assert(plusMinusAe(allComps[0].rotation, [0.314438614928, -0.269324957057, 0.583853827232, 0.698360317726]));
 
-    assert(plusMinusAe(allComps[1].x, [0.805, -1.779, 2.882, -1.908]));
-    assert(plusMinusAe(allComps[1].rotation, [0.912, -0.180, -0.2498, -0.2713]));
+    assert(plusMinusAe(allComps[1].x, [0.804662072404, -1.779048956095, 2.882053262750, -1.907666379059]));
+    assert(plusMinusAe(allComps[1].rotation, [0.911875506263, -0.180285805951, -0.249750506581, -0.271301997253]));
 
-    assert(plusMinusAe(allComps[2].x, [2.277, -0.1055, -1.2867, -0.8849]));
-    assert(plusMinusAe(allComps[2].rotation, [-0.1578, -0.5162, -0.704, 0.461]));
+    assert(plusMinusAe(allComps[2].x, [-2.277209252383, 0.105586618978, 1.286672544033, 0.884950089372]));
+    assert(plusMinusAe(allComps[2].rotation, [0.157856520582, 0.516206814724, 0.704400975064, -0.460902494755]));
 
     auto comp1 = firstComponent(mat);
     assert(plusMinusAe(comp1.x, allComps[0].x));
@@ -526,17 +527,14 @@ unittest {
     const double[][] m2 = mat;
     auto allCompsT = firstNComponents(m2, 3, opts);
 
-    assert(plusMinusAe(allCompsT[0].x, [-3.2045, 6.3829695, -0.7227162, -2.455]));
-    assert(plusMinusAe(allCompsT[0].rotation, [0.3025, 0.05657, 0.25142, 0.91763]));
+    assert(plusMinusAe(allCompsT[0].x, [-3.204536620708, 6.382966591576, -0.722708331235, -2.455721639633]));
+    assert(plusMinusAe(allCompsT[0].rotation, [0.302547035085, 0.056578515705, 0.251419580455, 0.917634108828]));
 
-    assert(plusMinusAe(allCompsT[1].x, [-3.46136, -0.6365, 1.75111, 2.3468]));
-    assert(plusMinusAe(allCompsT[1].rotation,
-        [-0.06269096,  0.88643747, -0.4498119, 0.08926183]));
+    assert(plusMinusAe(allCompsT[1].x, [-3.461348962430, -0.636607889874, 1.751113616446, 2.346843235858]));
+    assert(plusMinusAe(allCompsT[1].rotation, [-0.062691295444, 0.886437041789, -0.449813597484, 0.089257492334]));
 
-    assert(plusMinusAe(allCompsT[2].x,
-        [2.895362e-03,  3.201053e-01, -1.631345e+00,  1.308344e+00]));
-    assert(plusMinusAe(allCompsT[2].rotation,
-        [0.87140678, -0.14628160, -0.4409721, -0.15746595]));
+    assert(plusMinusAe(allCompsT[2].x, [0.002899452720, 0.320106053329, -1.631347225534, 1.308341719486]));
+    assert(plusMinusAe(allCompsT[2].rotation, [0.871406855522, -0.146282647210, -0.440971566070, -0.157466050918]));
 
     auto comp1T = firstComponent(m2, opts);
     assert(plusMinusAe(comp1T.x, allCompsT[0].x));
@@ -546,20 +544,14 @@ unittest {
     opts.unitVariance = true;
     opts.transpose = false;
     auto allCompsScale = firstNComponents(mat, 3, opts);
-    assert(plusMinusAe(allCompsScale[0].x,
-        [6.878307e-02, -1.791647e+00, -3.733826e-01,  2.096247e+00]));
-    assert(plusMinusAe(allCompsScale[0].rotation,
-        [-0.3903603,  0.5398265, -0.4767623, -0.5735014]));
+    assert(plusMinusAe(allCompsScale[0].x, [-0.068803007437, 1.791673359217, 0.373357867453, -2.096228219233]));
+    assert(plusMinusAe(allCompsScale[0].rotation, [0.390340396532, -0.539817964099, 0.476777033430, 0.573510767872]));
 
-    assert(plusMinusAe(allCompsScale[1].x,
-        [6.804833e-01, -9.412491e-01,  9.231432e-01, -6.623774e-01]));
-    assert(plusMinusAe(allCompsScale[1].rotation,
-        [0.7355678, -0.2849885, -0.5068900, -0.3475401]));
+    assert(plusMinusAe(allCompsScale[1].x, [-0.680544174533, 0.941198462441, -0.923100543158, 0.662446255251]));
+    assert(plusMinusAe(allCompsScale[1].rotation, [-0.735546484532, 0.285040822743, 0.506915236814, 0.347505454849]));
 
-    assert(plusMinusAe(allCompsScale[2].x,
-        [9.618048e-01,  1.428492e-02, -8.120905e-01, -1.639992e-01]));
-    assert(plusMinusAe(allCompsScale[2].rotation,
-            [-0.4925027, -0.5721616, -0.5897120, 0.2869006]));
+    assert(plusMinusAe(allCompsScale[2].x, [-0.961760321252, -0.014348321351, 0.812150350077, 0.163958292526]));
+    assert(plusMinusAe(allCompsScale[2].rotation, [0.492550245080, 0.572143596491, 0.589678389531, -0.286923958543]));
 
     auto comp1S = firstComponent(m2, opts);
     assert(plusMinusAe(comp1S.x, allCompsScale[0].x));
@@ -568,20 +560,14 @@ unittest {
     opts.transpose = true;
     auto allTScale = firstNComponents(mat, 3, opts);
 
-    assert(plusMinusAe(allTScale[0].x,
-        [-1.419319e-01,  2.141908e+00, -8.368606e-01, -1.163116e+00]));
-    assert(plusMinusAe(allTScale[0].rotation,
-        [0.5361711, -0.2270814,  0.5685768,  0.5810981]));
+    assert(plusMinusAe(allTScale[0].x, [-0.141980754245, 2.141922423876, -0.836851832291, -1.163089837340]));
+    assert(plusMinusAe(allTScale[0].rotation, [0.536179857406, -0.227058599807, 0.568566270739, 0.581109239769]));
 
-    assert(plusMinusAe(allTScale[1].x,
-        [-1.692899e+00,  4.929717e-01,  3.049089e-01,  8.950189e-01]));
-    assert(plusMinusAe(allTScale[1].rotation,
-        [0.3026505,  0.7906601, -0.3652524,  0.3871047]));
+    assert(plusMinusAe(allTScale[1].x, [-1.692899381798, 0.492909423755, 0.304950898787, 0.895039059256]));
+    assert(plusMinusAe(allTScale[1].rotation, [0.302620610574, 0.790673309226, -0.365259260470, 0.387094506258]));
 
-    assert(plusMinusAe(allTScale[2].x,
-        [ 2.035977e-01,  2.705193e-02, -9.113051e-01,  6.806556e-01]));
-    assert(plusMinusAe(allTScale[2].rotation,
-            [0.7333168, -0.3396207, -0.4837054, -0.3360555]));
+    assert(plusMinusAe(allTScale[2].x, [-0.203564434570, -0.027061601076, 0.911299154000, -0.680673118355]));
+    assert(plusMinusAe(allTScale[2].rotation, [-0.733322756574, 0.339605225915, 0.483712568304, 0.336047878267]));
 
     auto comp1ST = firstComponent(m2, opts);
     assert(plusMinusAe(comp1ST.x, allTScale[0].x));
