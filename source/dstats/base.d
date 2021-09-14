@@ -75,7 +75,15 @@ version(unittest) {
                            string file = __FILE__,
                            uint line = __LINE__)
     {
-        writefln(file ~ "(" ~ line.to!string ~ ",1): Debug: %.13f", lhs);
+        static if (isInputRange!T)
+            writefln(file ~ "(" ~ line.to!string ~ ",1): Debug: [%(%.13f, %)]", lhs);
+        else
+        {
+            if (lhs < 0.1)
+                writefln(file ~ "(" ~ line.to!string ~ ",1): Debug: %.13e", lhs);
+            else
+                writefln(file ~ "(" ~ line.to!string ~ ",1): Debug: %.13f", lhs);
+        }
         // return std.math.isClose(lhs, rhs, maxRelDiff, maxAbsDiff);
         return true;
     }
