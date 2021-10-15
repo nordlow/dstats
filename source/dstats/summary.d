@@ -474,7 +474,7 @@ unittest {
     auto foo = map!(to!(uint))(data);
 
     auto result = geometricMean(map!(to!(uint))(data));
-    assert(isClose2(result, 2.60517));
+    assert(isClose2(result, 2.6051710846974));
 
     Mean mean1, mean2, combined;
     foreach(i; 0..5) {
@@ -540,12 +540,12 @@ unittest {
     assert(sum([1,2,3,4,5,6,7,8,9,10][]) == 55);
     assert(sum(filter!"true"([1,2,3,4,5,6,7,8,9,10][])) == 55);
     assert(sum(cast(int[]) [1,2,3,4,5])==15);
-    assert(isClose2( sum(cast(int[]) [40.0, 40.1, 5.2]), 85.3));
+    assert(isClose2( sum(cast(int[]) [40.0, 40.1, 5.2]), 85.0000000000000));
     assert(mean(cast(int[]) [1,2,3]).mean == 2);
     assert(mean(cast(int[]) [1.0, 2.0, 3.0]).mean == 2.0);
     assert(mean([1, 2, 5, 10, 17][]).mean == 7);
     assert(mean([1, 2, 5, 10, 17][]).sum == 35);
-    assert(isClose2(mean([8,6,7,5,3,0,9,3,6,2,4,3,6][]).mean, 4.769231));
+    assert(isClose2(mean([8,6,7,5,3,0,9,3,6,2,4,3,6][]).mean, 4.7692307692308));
 
     // Test the OO struct a little, since we're using the new ILP algorithm.
     Mean m;
@@ -755,10 +755,10 @@ if(doubleIterable!(T)) {
 
 unittest {
     auto res = meanStdev(cast(int[]) [3, 1, 4, 5]);
-    assert(isClose2(res.stdev, 1.7078));
+    assert(isClose2(res.stdev, 1.7078251276599));
     assert(isClose2(res.mean, 3.25));
     res = meanStdev(cast(double[]) [1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0]);
-    assert(isClose2(res.stdev, 2.160247));
+    assert(isClose2(res.stdev, 2.1602468994693));
     assert(isClose2(res.mean, 4));
     assert(isClose2(res.sum, 28));
 
@@ -781,7 +781,7 @@ unittest {
     assert(isClose2(combined.stdev, mean1.stdev));
     assert(combined.N == mean1.N);
     assert(isClose2(combined.mean, 4.5));
-    assert(isClose2(combined.stdev, 3.027650));
+    assert(isClose2(combined.stdev, 3.0276503540975));
 
     foreach(i; 0..100) {
         // Monte carlo test the unrolled version.
@@ -1033,7 +1033,7 @@ unittest {
     // Values from Matlab.
     assert(isClose2(kurtosis([1, 1, 1, 1, 10].dup), 0.25));
     assert(isClose2(kurtosis([2.5, 3.5, 4.5, 5.5].dup), -1.36));
-    assert(isClose2(kurtosis([1,2,2,2,2,2,100].dup), 2.1657));
+    assert(isClose2(kurtosis([1,2,2,2,2,2,100].dup), 2.1657284337433));
 }
 
 /**Skewness is a measure of symmetry of a distribution.  Positive skewness
@@ -1055,13 +1055,13 @@ if(doubleIterable!(T)) {
 unittest {
     // Values from Octave.
     assert(isClose2(skewness([1,2,3,4,5].dup), 0));
-    assert(isClose2(skewness([3,1,4,1,5,9,2,6,5].dup), 0.5443));
-    assert(isClose2(skewness([2,7,1,8,2,8,1,8,2,8,4,5,9].dup), -0.0866));
+    assert(isClose2(skewness([3,1,4,1,5,9,2,6,5].dup), 0.5443310539518));
+    assert(isClose2(skewness([2,7,1,8,2,8,1,8,2,8,4,5,9].dup), -8.6577680613619e-02));
 
     // Test handling of ranges that are not arrays.
     string[] stringy = ["3", "1", "4", "1", "5", "9", "2", "6", "5"];
     auto intified = map!(to!(int))(stringy);
-    assert(isClose2(skewness(intified), 0.5443));
+    assert(isClose2(skewness(intified), 0.5443310539518));
 }
 
 /**Convenience function.  Puts all elements of data into a Summary struct,

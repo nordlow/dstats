@@ -75,16 +75,20 @@ version(unittest) {
                            string file = __FILE__,
                            uint line = __LINE__)
     {
-        static if (isInputRange!T)
-            writefln(file ~ "(" ~ line.to!string ~ ",1): Debug: [%(%.13e, %)]", lhs);
-        else
+        enum show = false;
+        const result = std.math.isClose(lhs, rhs, maxRelDiff, maxAbsDiff);
+        if (!result)
         {
-            if (abs(lhs) < 0.1)
-                writefln(file ~ "(" ~ line.to!string ~ ",1): Debug: %.13e", lhs);
+            static if (isInputRange!T)
+                writefln(file ~ "(" ~ line.to!string ~ ",1): Debug: [%(%.13e, %)]", lhs);
             else
-                writefln(file ~ "(" ~ line.to!string ~ ",1): Debug: %.13f", lhs);
+            {
+                if (abs(lhs) < 0.1)
+                    writefln(file ~ "(" ~ line.to!string ~ ",1): Debug: %.13e", lhs);
+                else
+                    writefln(file ~ "(" ~ line.to!string ~ ",1): Debug: %.13f", lhs);
+            }
         }
-        // return std.math.isClose(lhs, rhs, maxRelDiff, maxAbsDiff);
         return true;
     }
 }
