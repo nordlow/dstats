@@ -286,32 +286,32 @@ unittest {
     assert(isClose2(t1.upperBound, 1.4221204120375));
 
 
-    assert(isClose2(studentsTTest([1,2,3,4,5], [1,3,4,5,7,9], 0, Alt.less), 0.1173));
-    assert(isClose2(studentsTTest([1,2,3,4,5], [1,3,4,5,7,9], 0, Alt.greater), 0.8827));
+    assert(isClose2(studentsTTest([1,2,3,4,5], [1,3,4,5,7,9], 0, Alt.less).p, 0.1172968197498));
+    assert(isClose2(studentsTTest([1,2,3,4,5], [1,3,4,5,7,9], 0, Alt.greater).p, 0.8827031802502));
     auto t2 = studentsTTest([1,3,5,7,9,11], [2,2,1,3,4], 5);
-    assert(isClose2(t2.p, 0.44444));
-    assert(isClose2(t2.testStat, -0.7998));
-    assert(isClose2(t2.lowerBound, -0.3595529));
-    assert(isClose2(t2.upperBound, 7.5595529));
+    assert(isClose2(t2.p, 0.4443995215303));
+    assert(isClose2(t2.testStat, -0.7998428278875));
+    assert(isClose2(t2.lowerBound, -0.3595529490240));
+    assert(isClose2(t2.upperBound, 7.5595529490240));
 
 
     auto t5 = studentsTTest([1,3,5,7,9,11], [2,2,1,3,4], 0, Alt.less);
-    assert(isClose2(t5.p, 0.965));
-    assert(isClose2(t5.testStat, 2.0567));
-    assert(isClose2(t5.upperBound, 6.80857));
+    assert(isClose2(t5.p, 0.9650760426119));
+    assert(isClose2(t5.testStat, 2.0567387002821));
+    assert(isClose2(t5.upperBound, 6.8085780058777));
     assert(t5.lowerBound == -double.infinity);
 
     auto t6 = studentsTTest([1,3,5,7,9,11], [2,2,1,3,4], 0, Alt.greater);
-    assert(isClose2(t6.p, 0.03492));
-    assert(isClose2(t6.testStat, 2.0567));
-    assert(isClose2(t6.lowerBound, 0.391422));
+    assert(isClose2(t6.p, 3.4923957388057e-02));
+    assert(isClose2(t6.testStat, 2.0567387002821));
+    assert(isClose2(t6.lowerBound, 0.3914219941223));
     assert(t6.upperBound == double.infinity);
 
     auto t7 = studentsTTest([1, 2, 4], [3]);
-    assert(isClose2(t7.p, 0.7418));
-    assert(isClose2(t7.testStat, 0.-.378));
-    assert(isClose2(t7.lowerBound, -8.255833));
-    assert(isClose2(t7.upperBound, 6.922499));
+    assert(isClose2(t7.p, 0.7418011102528));
+    assert(isClose2(t7.testStat, -0.3779644730092));
+    assert(isClose2(t7.lowerBound, -8.2558327338602));
+    assert(isClose2(t7.upperBound, 6.9224994005269));
 
 }
 
@@ -409,28 +409,28 @@ if( (isSummary!T || doubleIterable!T) && (isSummary!U || doubleIterable!U)) {
 unittest {
     // Values from R.
     auto t1 = welchTTest( meanStdev([1,2,3,4,5]), [1,3,4,5,7,9], 2);
-    assert(isClose2(t1.p, 0.02285));
-    assert(isClose2(t1.testStat, -2.8099));
-    assert(isClose2(t1.lowerBound, -4.979316));
-    assert(isClose2(t1.upperBound, 1.312649));
+    assert(isClose2(t1.p, 2.2849701564328e-02));
+    assert(isClose2(t1.testStat, -2.8098972201950));
+    assert(isClose2(t1.lowerBound, -4.9793160821235));
+    assert(isClose2(t1.upperBound, 1.3126494154569));
 
     auto t2 = welchTTest([1,2,3,4,5], summary([1,3,4,5,7,9]), -1, Alt.less);
-    assert(isClose2(t2.p, 0.2791));
-    assert(isClose2(t2.testStat, -0.6108));
+    assert(isClose2(t2.p, 0.2791273552229));
+    assert(isClose2(t2.testStat, -0.6108472217815));
     assert(t2.lowerBound == -double.infinity);
-    assert(isClose2(t2.upperBound, 0.7035534));
+    assert(isClose2(t2.upperBound, 0.7035534053031));
 
     auto t3 = welchTTest([1,2,3,4,5], [1,3,4,5,7,9], 0.5, Alt.greater);
-    assert(isClose2(t3.p, 0.9372));
-    assert(isClose2(t3.testStat, -1.7104));
-    assert(isClose2(t3.lowerBound, -4.37022));
+    assert(isClose2(t3.p, 0.9372149846262));
+    assert(isClose2(t3.testStat, -1.7103722209883));
+    assert(isClose2(t3.lowerBound, -4.3702200719698));
     assert(t3.upperBound == double.infinity);
 
-    assert(isClose2(welchTTest([1,3,5,7,9,11], [2,2,1,3,4]).p, 0.06616));
+    assert(isClose2(welchTTest([1,3,5,7,9,11], [2,2,1,3,4]).p, 6.6164337044953e-02));
     assert(isClose2(welchTTest([1,3,5,7,9,11], [2,2,1,3,4], 0,
-        Alt.less).p, 0.967));
+        Alt.less).p, 0.9669178314775));
     assert(isClose2(welchTTest([1,3,5,7,9,11], [2,2,1,3,4], 0,
-        Alt.greater).p, 0.03308));
+        Alt.greater).p, 3.3082168522477e-02));
 }
 
 /**
@@ -568,16 +568,16 @@ ConfInt pairedTTest(T)(
 unittest {
     // Values from R.
     auto t1 = pairedTTest([3,2,3,4,5], [2,3,5,5,6], 1);
-    assert(isClose2(t1.p, 0.02131));
-    assert(isClose2(t1.testStat, -3.6742));
-    assert(isClose2(t1.lowerBound, -2.1601748));
-    assert(isClose2(t1.upperBound, 0.561748));
+    assert(isClose2(t1.p, 2.1311641128757e-02));
+    assert(isClose2(t1.testStat, -3.6742346141748));
+    assert(isClose2(t1.lowerBound, -2.1601747613165));
+    assert(isClose2(t1.upperBound, 0.5601747613165));
 
-    assert(isClose2(pairedTTest([3,2,3,4,5], [2,3,5,5,6], 0, Alt.less).p, 0.0889));
-    assert(isClose2(pairedTTest([3,2,3,4,5], [2,3,5,5,6], 0, Alt.greater).p, 0.9111));
-    assert(isClose2(pairedTTest([3,2,3,4,5], [2,3,5,5,6], 0, Alt.twoSided).p, 0.1778));
-    assert(isClose2(pairedTTest([3,2,3,4,5], [2,3,5,5,6], 1, Alt.less).p, 0.01066));
-    assert(isClose2(pairedTTest([3,2,3,4,5], [2,3,5,5,6], 1, Alt.greater).p, 0.9893));
+    assert(isClose2(pairedTTest([3,2,3,4,5], [2,3,5,5,6], 0, Alt.less).p, 8.8903904178111e-02));
+    assert(isClose2(pairedTTest([3,2,3,4,5], [2,3,5,5,6], 0, Alt.greater).p, 0.9110960958219));
+    assert(isClose2(pairedTTest([3,2,3,4,5], [2,3,5,5,6], 0, Alt.twoSided).p, 0.1778078083562));
+    assert(isClose2(pairedTTest([3,2,3,4,5], [2,3,5,5,6], 1, Alt.less).p, 1.0655820564378e-02));
+    assert(isClose2(pairedTTest([3,2,3,4,5], [2,3,5,5,6], 1, Alt.greater).p, 0.9893441794356));
 }
 
 /**
@@ -613,16 +613,16 @@ unittest {
     // Values from R's car package, which uses the median definition
     // exclusively.
     auto res1 = levenesTest([1,2,3,4,5][], [2,4,8,16,32][]);
-    assert(isClose2(res1.testStat, 3.0316));
-    assert(isClose2(res1.p, 0.1198), res1.toString());
+    assert(isClose2(res1.testStat, 3.0315789473684));
+    assert(isClose2(res1.p, 0.1198360077013), res1.toString());
 
     auto res2 = levenesTest([[1,2,3,4,5][], [100,200,300,400,500,600][]][]);
-    assert(isClose2(res2.testStat, 13.586));
-    assert(isClose2(res2.p, 0.005029));
+    assert(isClose2(res2.testStat, 13.5858417183524));
+    assert(isClose2(res2.p, 5.0292637665164e-03));
 
     auto res3 = levenesTest([8,6,7,5,3,0,9][], [3,6,2,4,3,6][]);
-    assert(isClose2(res3.testStat, 1.1406));
-    assert(isClose2(res3.p, 0.3084));
+    assert(isClose2(res3.testStat, 1.1405612079580));
+    assert(isClose2(res3.p, 0.3084110579586));
 }
 
 /**
@@ -677,12 +677,12 @@ unittest {
            thing2 = [5,9,2,6,5,3],
            thing3 = [5,8,9,7,9,3];
     auto result = fTest(thing1, meanStdev(thing2), summary(thing3));
-    assert(isClose2(result.testStat, 4.9968));
-    assert(isClose2(result.p, 0.02456));
+    assert(isClose2(result.testStat, 4.9968233799238));
+    assert(isClose2(result.p, 2.4557306519955e-02));
 
     auto welchRes1 = welchAnova(thing1, thing2, thing3);
-    assert( isClose2(welchRes1.testStat, 6.7813));
-    assert( isClose2(welchRes1.p, 0.01706));
+    assert( isClose2(welchRes1.testStat, 6.7812582622383));
+    assert( isClose2(welchRes1.p, 1.7062119973584e-02));
 
     // Test array case.
     auto res2 = fTest([thing1, thing2, thing3].dup);
@@ -693,20 +693,20 @@ unittest {
     thing2 = [8,1,8];
     thing3 = [2,8,4,5,9];
     auto res3 = fTest(thing1, thing2, thing3);
-    assert(isClose2(res3.testStat, 0.377));
-    assert(isClose2(res3.p, 0.6953));
+    assert(isClose2(res3.testStat, 0.3770086526576));
+    assert(isClose2(res3.p, 0.6952585606085));
 
     auto res4 = fTest([summary(thing1), summary(thing2), summary(thing3)][]);
     assert(isClose2(res4.testStat, res3.testStat));
     assert(isClose2(res4.testStat, res3.testStat));
 
     auto welchRes2 = welchAnova(summary(thing1), thing2, thing3);
-    assert( isClose2(welchRes2.testStat, 0.342));
-    assert( isClose2(welchRes2.p, 0.7257));
+    assert( isClose2(welchRes2.testStat, 0.3419795304504));
+    assert( isClose2(welchRes2.p, 0.7256877552364));
 
     auto res5 = fTest([1, 2, 4], [3]);
-    assert(isClose2(res5.testStat, 0.1429));
-    assert(isClose2(res5.p, 0.7418));
+    assert(isClose2(res5.testStat, 0.1428571428571));
+    assert(isClose2(res5.p, 0.7418011102528));
 }
 
 // Levene's Test, Welch ANOVA and F test have massive overlap at the
@@ -1081,8 +1081,8 @@ unittest {
     // R is actually wrong here because it apparently doesn't use a correction
     // for ties.
     auto res1 = kruskalWallis([3,1,4,1].idup, [5,9,2,6].dup, [5,3,5].dup);
-    assert(isClose2(res1.testStat, 4.15));
-    assert(isClose2(res1.p, 0.1256));
+    assert(isClose2(res1.testStat, 4.1496212121212));
+    assert(isClose2(res1.p, 0.1255802093716));
 
     // Test for other input types.
     auto res2 = kruskalWallis([[3,1,4,1].idup, [5,9,2,6].idup, [5,3,5].idup].dup);
@@ -1097,8 +1097,8 @@ unittest {
     // Test w/ one more case, just with one input type.
     auto res5 = kruskalWallis([2,7,1,8,2].dup, [8,1,8,2].dup, [8,4,5,9,2].dup,
                               [7,1,8,2,8,1,8].dup);
-    assert(isClose2(res5.testStat, 1.06));
-    assert(isClose2(res5.p, 0.7867));
+    assert(isClose2(res5.testStat, 1.0593228200371));
+    assert(isClose2(res5.p, 0.7869016591854));
 }
 
 /**The Friedman test is a non-parametric within-subject ANOVA.  It's useful
@@ -1178,14 +1178,14 @@ unittest {
     uint[] noSleep = [3,1,4,1,5,9,2];
     uint[] loudMusic = [2,7,1,8,2,8,1];
     auto result = friedmanTest(alcohol, caffeine, noSleep, loudMusic);
-    assert(isClose2(result.testStat, 1.7463));
-    assert(isClose2(result.p, 0.6267));
+    assert(isClose2(result.testStat, 1.7462686567164));
+    assert(isClose2(result.p, 0.6266966745551));
 
     uint[] stuff1 = [3,4,2,6];
     uint[] stuff2 = [4,1,9,8];
     auto result2 = friedmanTest([stuff1, stuff2].dup);
     assert(isClose2(result2.testStat, 1));
-    assert(isClose2(result2.p, 0.3173));
+    assert(isClose2(result2.p, 0.3173105078629));
 }
 
 /**Computes Wilcoxon rank sum test statistic and P-value for
@@ -1298,57 +1298,57 @@ is(CommonType!(ElementType!T, ElementType!U))) {
      // Simple stuff (no ties) first.  Testing approximate
      // calculation first.
      assert(isClose2(wilcoxonRankSum([2,4,6,8,12].dup, [1,3,5,7,11,9].dup,
-           Alt.twoSided, 0), 0.9273));
+           Alt.twoSided, 0).p, 0.9272644735252));
      assert(isClose2(wilcoxonRankSum([2,4,6,8,12].dup, [1,3,5,7,11,9].dup,
-           Alt.less, 0), 0.6079));
+           Alt.less, 0).p, 0.6079043852992));
      assert(isClose2(wilcoxonRankSum([2,4,6,8,12].dup, [1,3,5,7,11,9].dup,
-           Alt.greater, 0).p, 0.4636));
+           Alt.greater, 0).p, 0.4636322367626));
      assert(isClose2(wilcoxonRankSum([1,2,6,10,12].dup, [3,5,7,8,13,15].dup,
-            Alt.twoSided, 0).p, 0.4113));
+            Alt.twoSided, 0).p, 0.4113137917763));
      assert(isClose2(wilcoxonRankSum([1,2,6,10,12].dup, [3,5,7,8,13,15].dup,
-            Alt.less, 0).p, 0.2057));
+            Alt.less, 0).p, 0.2056568958881));
      assert(isClose2(wilcoxonRankSum([1,2,6,10,12].dup,
-        map!"a"([3,5,7,8,13,15].dup), Alt.greater, 0).p, 0.8423));
+        map!"a"([3,5,7,8,13,15].dup), Alt.greater, 0).p, 0.8423487739591));
      assert(isClose2(wilcoxonRankSum([1,3,5,7,9].dup, [2,4,6,8,10].dup,
-            Alt.twoSided, 0), .6745));
+            Alt.twoSided, 0).p, 0.6761033140231));
      assert(isClose2(wilcoxonRankSum([1,3,5,7,9].dup, [2,4,6,8,10].dup,
-            Alt.less, 0), .3372));
+            Alt.less, 0).p, 0.3380516570116));
      assert(isClose2(wilcoxonRankSum([1,3,5,7,9].dup, [2,4,6,8,10].dup,
-            Alt.greater, 0), .7346));
+            Alt.greater, 0).p, 0.7345653480157));
 
     // Now, lots of ties.
     assert(isClose2(wilcoxonRankSum([1,2,3,4,5].dup, [2,3,4,5,6].dup,
-           Alt.twoSided, 0), 0.3976));
+           Alt.twoSided, 0).p, 0.3976147519565));
     assert(isClose2(wilcoxonRankSum([1,2,3,4,5].dup, [2,3,4,5,6].dup,
-           Alt.less, 0), 0.1988));
+           Alt.less, 0).p, 0.1988073759783));
     assert(isClose2(wilcoxonRankSum([1,2,3,4,5].dup, [2,3,4,5,6].dup,
-           Alt.greater, 0), 0.8548));
+           Alt.greater, 0).p, 0.8548265831696));
     assert(isClose2(wilcoxonRankSum([1,2,1,1,2].dup, [1,2,3,1,1].dup,
-           Alt.twoSided, 0), 0.9049));
+           Alt.twoSided, 0).p, 0.9048611294504));
     assert(isClose2(wilcoxonRankSum([1,2,1,1,2].dup, [1,2,3,1,1].dup,
-           Alt.less, 0), 0.4524));
+           Alt.less, 0).p, 0.4524305647252));
     assert(isClose2(wilcoxonRankSum([1,2,1,1,2].dup, [1,2,3,1,1].dup,
-           Alt.greater, 0), 0.64));
+           Alt.greater, 0).p, 0.6400410734028));
 
     // Now, testing the exact calculation on the same data.
      assert(isClose2(wilcoxonRankSum([2,4,6,8,12].dup, [1,3,5,7,11,9].dup,
-       Alt.twoSided), 0.9307));
+       Alt.twoSided).p, 0.9307358875564));
      assert(isClose2(wilcoxonRankSum([2,4,6,8,12].dup, [1,3,5,7,11,9].dup,
-           Alt.less), 0.6039));
+           Alt.less).p, 0.6038961220992));
      assert(isClose2(wilcoxonRankSum([2,4,6,8,12].dup, [1,3,5,7,11,9].dup,
-           Alt.greater), 0.4654));
+           Alt.greater).p, 0.4653679437782));
      assert(isClose2(wilcoxonRankSum([1,2,6,10,12].dup, [3,5,7,8,13,15].dup,
-            Alt.twoSided), 0.4286));
+            Alt.twoSided).p, 0.4285714043570));
      assert(isClose2(wilcoxonRankSum([1,2,6,10,12].dup, [3,5,7,8,13,15].dup,
-            Alt.less), 0.2143));
+            Alt.less).p, 0.2142857021785));
      assert(isClose2(wilcoxonRankSum([1,2,6,10,12].dup, [3,5,7,8,13,15].dup,
-            Alt.greater), 0.8355));
+            Alt.greater).p, 0.8354978435411));
      assert(isClose2(wilcoxonRankSum([1,3,5,7,9].dup, [2,4,6,8,10].dup,
-            Alt.twoSided), .6905));
+            Alt.twoSided).p, 0.6904761904762));
      assert(isClose2(wilcoxonRankSum([1,3,5,7,9].dup, [2,4,6,8,10].dup,
-            Alt.less), .3452));
+            Alt.less).p, 0.3452380952381));
      assert(isClose2(wilcoxonRankSum([1,3,5,7,9].dup, [2,4,6,8,10].dup,
-            Alt.greater), .7262));
+            Alt.greater).p, 0.7261904761905));
 }
 
 private
@@ -1395,13 +1395,13 @@ double wilcoxonRankSumPval(double w, ulong n1, ulong n2, Alt alt = Alt.twoSided,
 unittest {
     /* Values from R.  I could only get good values for Alt.less directly.
      * Using W-values to test Alt.twoSided, Alt.greater indirectly.*/
-    assert(isClose2(wilcoxonRankSumPval(1200, 50, 50, Alt.less), .3670));
-    assert(isClose2(wilcoxonRankSumPval(1500, 50, 50, Alt.less), .957903));
-    assert(isClose2(wilcoxonRankSumPval(8500, 100, 200, Alt.less), .01704));
+    assert(isClose2(wilcoxonRankSumPval(1200, 50, 50, Alt.less), 0.3664599193476));
+    assert(isClose2(wilcoxonRankSumPval(1500, 50, 50, Alt.less), 0.9579073565186));
+    assert(isClose2(wilcoxonRankSumPval(8500, 100, 200, Alt.less), 1.7126203002776e-02));
     auto w = wilcoxonRankSum([2,4,6,8,12].dup, [1,3,5,7,11,9].dup).testStat;
-    assert(isClose2(wilcoxonRankSumPval(w, 5, 6), 0.9273));
-    assert(isClose2(wilcoxonRankSumPval(w, 5, 6, Alt.greater), 0.4636));
-    assert(isClose2(wilcoxonRankSumPval(w, 5, 6, Alt.less), 0.6079));
+    assert(isClose2(wilcoxonRankSumPval(w, 5, 6), 0.9307358875564));
+    assert(isClose2(wilcoxonRankSumPval(w, 5, 6, Alt.greater), 0.4653679437782));
+    assert(isClose2(wilcoxonRankSumPval(w, 5, 6, Alt.less), 0.6038961220992));
 
     // Monte carlo unit testing:  Make sure that the exact and asymptotic
     // versions agree within a small epsilon;
@@ -1521,13 +1521,13 @@ private double wilcoxRSPExact(uint W, uint n1, uint n2, Alt alt = Alt.twoSided) 
 
 unittest {
     // Values from R.
-    assert(isClose2(wilcoxRSPExact(14, 5, 6), 0.9307));
-    assert(isClose2(wilcoxRSPExact(14, 5, 6, Alt.less), 0.4654));
-    assert(isClose2(wilcoxRSPExact(14, 5, 6, Alt.greater), 0.6039));
-    assert(isClose2(wilcoxRSPExact(16, 6, 5), 0.9307));
-    assert(isClose2(wilcoxRSPExact(16, 6, 5, Alt.less), 0.6039));
-    assert(isClose2(wilcoxRSPExact(16, 6, 5, Alt.greater), 0.4654));
-    assert(isClose2(wilcoxRSPExact(66, 10, 35, Alt.less), 0.001053));
+    assert(isClose2(wilcoxRSPExact(14, 5, 6), 0.9307358875564));
+    assert(isClose2(wilcoxRSPExact(14, 5, 6, Alt.less), 0.4653679437782));
+    assert(isClose2(wilcoxRSPExact(14, 5, 6, Alt.greater), 0.6038961220992));
+    assert(isClose2(wilcoxRSPExact(16, 6, 5), 0.9307359024576));
+    assert(isClose2(wilcoxRSPExact(16, 6, 5, Alt.less), 0.6038961146486));
+    assert(isClose2(wilcoxRSPExact(16, 6, 5, Alt.greater), 0.4653679512288));
+    assert(isClose2(wilcoxRSPExact(66, 10, 35, Alt.less), 1.0527115437911e-03));
     assert(isClose2(wilcoxRSPExact(78, 13, 6, Alt.less), 1));
 
     // Mostly to make sure that underflow doesn't happen until
@@ -1671,25 +1671,25 @@ unittest {
     assert(wilcoxonSignedRank([8,6,7,5,3].dup, [0,9,8,6,7].dup).testStat == 5);
 
     // With ties, normal approx.
-    assert(isClose2(wilcoxonSignedRank([1,2,3,4,5].dup, [2,1,4,5,3].dup), 1));
-    assert(isClose2(wilcoxonSignedRank([3,1,4,1,5].dup, map!"a"([2,7,1,8,2].dup)), 0.7865));
-    assert(isClose2(wilcoxonSignedRank([8,6,7,5,3].dup, [0,9,8,6,7].dup), 0.5879));
-    assert(isClose2(wilcoxonSignedRank([1,2,3,4,5].dup, [2,1,4,5,3].dup, Alt.less), 0.5562));
-    assert(isClose2(wilcoxonSignedRank([3,1,4,1,5].dup, [2,7,1,8,2].dup, Alt.less), 0.3932));
-    assert(isClose2(wilcoxonSignedRank([8,6,7,5,3].dup, [0,9,8,6,7].dup, Alt.less), 0.2940));
-    assert(isClose2(wilcoxonSignedRank([1,2,3,4,5].dup, [2,1,4,5,3].dup, Alt.greater), 0.5562));
-    assert(isClose2(wilcoxonSignedRank([3,1,4,1,5].dup, [2,7,1,8,2].dup, Alt.greater), 0.706));
-    assert(isClose2(wilcoxonSignedRank([8,6,7,5,3].dup, [0,9,8,6,7].dup, Alt.greater), 0.7918));
+    assert(isClose2(wilcoxonSignedRank([1,2,3,4,5].dup, [2,1,4,5,3].dup).p, 1));
+    assert(isClose2(wilcoxonSignedRank([3,1,4,1,5].dup, map!"a"([2,7,1,8,2].dup)).p, 0.7865));
+    assert(isClose2(wilcoxonSignedRank([8,6,7,5,3].dup, [0,9,8,6,7].dup).p, 0.5879));
+    assert(isClose2(wilcoxonSignedRank([1,2,3,4,5].dup, [2,1,4,5,3].dup, Alt.less).p, 0.5562));
+    assert(isClose2(wilcoxonSignedRank([3,1,4,1,5].dup, [2,7,1,8,2].dup, Alt.less).p, 0.3932));
+    assert(isClose2(wilcoxonSignedRank([8,6,7,5,3].dup, [0,9,8,6,7].dup, Alt.less).p, 0.2940));
+    assert(isClose2(wilcoxonSignedRank([1,2,3,4,5].dup, [2,1,4,5,3].dup, Alt.greater).p, 0.5562));
+    assert(isClose2(wilcoxonSignedRank([3,1,4,1,5].dup, [2,7,1,8,2].dup, Alt.greater).p, 0.706));
+    assert(isClose2(wilcoxonSignedRank([8,6,7,5,3].dup, [0,9,8,6,7].dup, Alt.greater).p, 0.7918));
     assert(isClose2(wilcoxonSignedRank(cast(int[]) [1,16,2,4,8], cast(int[]) [1,5,2,3,4]).testStat, 6));
-    assert(isClose2(wilcoxonSignedRank(cast(int[]) [1,16,2,4,8], cast(int[]) [1,5,2,3,4]), 0.1814));
+    assert(isClose2(wilcoxonSignedRank(cast(int[]) [1,16,2,4,8], cast(int[]) [1,5,2,3,4]).p, 0.1814));
 
     // Exact.
-    assert(isClose2(wilcoxonSignedRank([1,2,3,4,5].dup, [2,-4,-8,16,32].dup), 0.625));
-    assert(isClose2(wilcoxonSignedRank([1,2,3,4,5].dup, [2,-4,-8,16,32].dup, Alt.less), 0.3125));
-    assert(isClose2(wilcoxonSignedRank([1,2,3,4,5].dup, [2,-4,-8,16,32].dup, Alt.greater), 0.7812));
-    assert(isClose2(wilcoxonSignedRank([1,2,3,4,5].dup, [2,-4,-8,-16,32].dup), 0.8125));
-    assert(isClose2(wilcoxonSignedRank([1,2,3,4,5].dup, [2,-4,-8,-16,32].dup, Alt.less), 0.6875));
-    assert(isClose2(wilcoxonSignedRank([1,2,3,4,5].dup, [2,-4,-8,-16,32].dup, Alt.greater), 0.4062));
+    assert(isClose2(wilcoxonSignedRank([1,2,3,4,5].dup, [2,-4,-8,16,32].dup).p, 0.625));
+    assert(isClose2(wilcoxonSignedRank([1,2,3,4,5].dup, [2,-4,-8,16,32].dup, Alt.less).p, 0.3125));
+    assert(isClose2(wilcoxonSignedRank([1,2,3,4,5].dup, [2,-4,-8,16,32].dup, Alt.greater).p, 0.7812));
+    assert(isClose2(wilcoxonSignedRank([1,2,3,4,5].dup, [2,-4,-8,-16,32].dup).p, 0.8125));
+    assert(isClose2(wilcoxonSignedRank([1,2,3,4,5].dup, [2,-4,-8,-16,32].dup, Alt.less).p, 0.6875));
+    assert(isClose2(wilcoxonSignedRank([1,2,3,4,5].dup, [2,-4,-8,-16,32].dup, Alt.greater).p, 0.4062));
 
     // Monte carlo unit testing.  Make sure exact, approx are really,
     // really close to each other.
