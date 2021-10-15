@@ -781,19 +781,19 @@ unittest {
     assert(isClose(res2.stdErr[1], 19.8331710427068));
     assert(isClose(res2.stdErr[2], 6.0084289928963));
 
-    assert(isClose2(res2.p[0], 0.0000042833082));
-    assert(isClose2(res2.p[1], 0.0000105970641));
-    assert(isClose2(res2.p[2], 0.0000002566475));
+    assert(isClose(res2.p[0], 4.2833081544908e-06));
+    assert(isClose(res2.p[1], 1.0597064094176e-05));
+    assert(isClose(res2.p[2], 2.5664751536050e-07));
 
-    assert(isClose2(res2.R2, 0.9989, 0.0001));
-    assert(isClose2(res2.adjustedR2, 0.9987, 0.0001));
+    assert(isClose(res2.R2, 0.9989045584366));
+    assert(isClose(res2.adjustedR2, 0.9987219848427));
 
-    assert(isClose2(res2.lowerBound[0], 92.9, 0.01));
-    assert(isClose2(res2.lowerBound[1], -186.8, 0.01));
-    assert(isClose2(res2.lowerBound[2], 48.7, 0.01));
-    assert(isClose2(res2.upperBound[0], 164.7, 0.01));
-    assert(isClose2(res2.upperBound[1], -99.5, 0.01));
-    assert(isClose2(res2.upperBound[2], 75.2, 0.01));
+    assert(isClose(res2.lowerBound[0], 93.2801092183619));
+    assert(isClose(res2.lowerBound[1], -186.3747903778296));
+    assert(isClose(res2.lowerBound[2], 48.8690832645249));
+    assert(isClose(res2.upperBound[0], 164.3454979257257));
+    assert(isClose(res2.upperBound[1], -99.9492553361613));
+    assert(isClose(res2.upperBound[2], 75.0515676162589));
 
     auto res3 = linearRegress(weights, repeat(1), heights, map!"a * a"(heights));
     assert(res2.betas == res3.betas);
@@ -803,12 +803,12 @@ unittest {
         (beta1Buf[], diseaseSev, repeat(1), temperature);
     assert(beta1Buf.ptr == beta1.ptr);
     assert(beta1Buf[] == beta1[]);
-    assert(isClose2(beta1, res1.betas));
+    assert(isClose(beta1, res1.betas));
     auto beta2 = polyFitBeta(weights, heights, 2);
-    assert(isClose2(beta2, res2.betas));
+    assert(isClose(beta2, res2.betas));
 
     auto res4 = linearRegress(weights, repeat(1), heights);
-    assert(isClose2(res4.p, 3.604e-14));
+    assert(isClose(res4.p, [6.0549000041952e-09, 3.6035153395491e-14]));
     assert(isClose2(res4.betas, [-39.062, 61.272]));
     assert(isClose2(res4.p, [6.05e-9, 3.60e-14]));
     assert(isClose2(res4.R2, 0.9892));

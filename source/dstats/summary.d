@@ -138,7 +138,7 @@ unittest {
 
         // Off by some tiny fraction in even N case because of division.
         // No idea why, but it's too small a rounding error to care about.
-        assert(isClose2(quickRes, accurateRes));
+        assert(isClose(quickRes, accurateRes));
     }
 
     // Make sure everything works with lowest common denominator range type.

@@ -76,10 +76,10 @@ version(unittest) {
                            uint line = __LINE__)
     {
         static if (isInputRange!T)
-            writefln(file ~ "(" ~ line.to!string ~ ",1): Debug: [%(%.13f, %)]", lhs);
+            writefln(file ~ "(" ~ line.to!string ~ ",1): Debug: [%(%.13e, %)]", lhs);
         else
         {
-            if (lhs < 0.1)
+            if (abs(lhs) < 0.1)
                 writefln(file ~ "(" ~ line.to!string ~ ",1): Debug: %.13e", lhs);
             else
                 writefln(file ~ "(" ~ line.to!string ~ ",1): Debug: %.13f", lhs);
