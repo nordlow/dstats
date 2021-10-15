@@ -286,10 +286,8 @@ unittest {
     assert(isClose2(t1.upperBound, 1.4221204120375));
 
 
-    assert(isClose2(studentsTTest([1,2,3,4,5], [1,3,4,5,7,9], 0, Alt.less),
-           0.1173));
-    assert(isClose2(studentsTTest([1,2,3,4,5], [1,3,4,5,7,9], 0, Alt.greater),
-           0.8827));
+    assert(isClose2(studentsTTest([1,2,3,4,5], [1,3,4,5,7,9], 0, Alt.less), 0.1173));
+    assert(isClose2(studentsTTest([1,2,3,4,5], [1,3,4,5,7,9], 0, Alt.greater), 0.8827));
     auto t2 = studentsTTest([1,3,5,7,9,11], [2,2,1,3,4], 5);
     assert(isClose2(t2.p, 0.44444));
     assert(isClose2(t2.testStat, -0.7998));
