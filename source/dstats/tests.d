@@ -167,22 +167,22 @@ ConfInt studentsTTest(T)(
 
 unittest {
     auto t1 = studentsTTest([1, 2, 3, 4, 5].dup, 2);
-    assert(isClose2(t1.testStat, 1.4142));
-    assert(isClose2(t1.p, 0.2302));
-    assert(isClose2(t1.lowerBound, 1.036757));
-    assert(isClose2(t1.upperBound, 4.963243));
+    assert(isClose2(t1.testStat, 1.4142135623731));
+    assert(isClose2(t1.p, 0.2301996410805));
+    assert(isClose2(t1.lowerBound, 1.0367568385224));
+    assert(isClose2(t1.upperBound, 4.9632431614776));
     assert(t1 == studentsTTest( meanStdev([1,2,3,4,5].dup), 2));
 
     auto t2 = studentsTTest([1, 2, 3, 4, 5].dup, 2, Alt.less);
-    assert(isClose2(t2.p, .8849));
-    assert(isClose2(t2.testStat, 1.4142));
+    assert(isClose2(t2.p, 0.8849001794598));
+    assert(isClose2(t2.testStat, 1.4142135623731));
     assert(t2.lowerBound == -double.infinity);
-    assert(isClose2(t2.upperBound, 4.507443));
+    assert(isClose2(t2.upperBound, 4.5074433190623));
 
     auto t3 = studentsTTest( summary([1, 2, 3, 4, 5].dup), 2, Alt.greater);
-    assert(isClose2(t3.p, .1151));
-    assert(isClose2(t3.testStat, 1.4142));
-    assert(isClose2(t3.lowerBound, 1.492557));
+    assert(isClose2(t3.p, 0.1150998205402));
+    assert(isClose2(t3.testStat, 1.4142135623731));
+    assert(isClose2(t3.lowerBound, 1.4925566809377));
     assert(t3.upperBound == double.infinity);
 }
 
@@ -280,10 +280,10 @@ ConfInt studentsTTest(T, U)(
 unittest {
     // Values from R.
     auto t1 = studentsTTest([1,2,3,4,5], [1,3,4,5,7,9]);
-    assert(isClose2(t1.p, 0.2346));
-    assert(isClose2(t1.testStat, -1.274));
-    assert(isClose2(t1.lowerBound, -5.088787));
-    assert(isClose2(t1.upperBound, 1.422120));
+    assert(isClose2(t1.p, 0.2345936394996));
+    assert(isClose2(t1.testStat, -1.2739508701956));
+    assert(isClose2(t1.lowerBound, -5.0887870787042));
+    assert(isClose2(t1.upperBound, 1.4221204120375));
 
 
     assert(isClose2(studentsTTest([1,2,3,4,5], [1,3,4,5,7,9], 0, Alt.less),

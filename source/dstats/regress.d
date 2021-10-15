@@ -809,19 +809,16 @@ unittest {
 
     auto res4 = linearRegress(weights, repeat(1), heights);
     assert(isClose(res4.p, [6.0549000041952e-09, 3.6035153395491e-14]));
-    assert(isClose2(res4.betas, [-39.062, 61.272]));
-    assert(isClose2(res4.p, [6.05e-9, 3.60e-14]));
-    assert(isClose2(res4.R2, 0.9892));
-    assert(isClose2(res4.adjustedR2, 0.9884));
-    assert(isClose2(res4.residualError, 0.7591));
-    assert(isClose2(res4.lowerBound, [-45.40912, 57.43554]));
-    assert(isClose2(res4.upperBound, [-32.71479, 65.10883]));
+    assert(isClose2(res4.betas, [-3.9061955918845e+01, 6.1272186542110e+01]));
+    assert(isClose2(res4.p, [6.0549000041952e-09, 3.6035153395491e-14]));
+    assert(isClose2(res4.R2, 0.9891969224458));
+    assert(isClose2(res4.adjustedR2, 0.9883659164801));
+    assert(isClose2(res4.residualError, 0.7590762809485));
+    assert(isClose2(res4.lowerBound, [-4.5409121337043e+01, 5.7435538691925e+01]));
+    assert(isClose2(res4.upperBound, [-3.2714790500648e+01, 6.5108834392295e+01]));
 
     // Test residuals.
-    assert(isClose2(residuals(res4.betas, weights, repeat(1), heights),
-        [1.20184170, 0.27367611,  0.40823237, -0.06993322,  0.06462305,
-         -0.40354255, -0.88170814,  -0.74715188, -0.76531747, -0.63076120,
-         -0.65892680, -0.06437053, -0.08253613,  0.96202014,  1.39385455]));
+    assert(isClose2(residuals(res4.betas, weights, repeat(1), heights), [1.2018417019438e+00, 2.7367610568046e-01, 4.0823237483826e-01, -6.9933221425032e-02, 6.4623047732766e-02, -4.0354254853053e-01, -8.8170814479383e-01, -7.4715187563603e-01, -7.6531747189932e-01, -6.3076120274152e-01, -6.5892679900482e-01, -6.4370529847025e-02, -8.2536126110313e-02, 9.6202014304748e-01, 1.3938545467842e+00]));
 
     // Test nonzero ridge parameters.
         // Values from R's MASS package.
@@ -838,9 +835,9 @@ unittest {
     auto ridge1 = linearRegressBeta(a, repeat(1), b, c, 1);
     auto ridge2 = linearRegressBeta(a, repeat(1), b, c, 2);
     auto ridge3 = linearRegressBeta(c, [[1,1,1,1,1,1,1], a, b], 10);
-    assert(isClose2(ridge1, [6.0357757, -0.2729671, -0.1337131]));
-    assert(isClose2(ridge2, [5.62367784, -0.22449854, -0.09775174]));
-    assert(isClose2(ridge3, [5.82653624, -0.05197246, -0.27185592 ]));
+    assert(isClose2(ridge1, [6.0357756826902e+00, -2.7296712895837e-01, -1.3371306477288e-01]));
+    assert(isClose2(ridge2, [5.6236778399227e+00, -2.2449853890078e-01, -9.7751737973418e-02]));
+    assert(isClose2(ridge3, [5.8265362398679e+00, -5.1972455165528e-02, -2.7185591932738e-01]));
 }
 
 private MeanSD[] calculateSummaries(X...)(X xIn, RegionAllocator alloc) {
