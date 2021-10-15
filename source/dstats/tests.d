@@ -1672,24 +1672,24 @@ unittest {
 
     // With ties, normal approx.
     assert(isClose2(wilcoxonSignedRank([1,2,3,4,5].dup, [2,1,4,5,3].dup).p, 1));
-    assert(isClose2(wilcoxonSignedRank([3,1,4,1,5].dup, map!"a"([2,7,1,8,2].dup)).p, 0.7865));
-    assert(isClose2(wilcoxonSignedRank([8,6,7,5,3].dup, [0,9,8,6,7].dup).p, 0.5879));
-    assert(isClose2(wilcoxonSignedRank([1,2,3,4,5].dup, [2,1,4,5,3].dup, Alt.less).p, 0.5562));
-    assert(isClose2(wilcoxonSignedRank([3,1,4,1,5].dup, [2,7,1,8,2].dup, Alt.less).p, 0.3932));
-    assert(isClose2(wilcoxonSignedRank([8,6,7,5,3].dup, [0,9,8,6,7].dup, Alt.less).p, 0.2940));
-    assert(isClose2(wilcoxonSignedRank([1,2,3,4,5].dup, [2,1,4,5,3].dup, Alt.greater).p, 0.5562));
-    assert(isClose2(wilcoxonSignedRank([3,1,4,1,5].dup, [2,7,1,8,2].dup, Alt.greater).p, 0.706));
-    assert(isClose2(wilcoxonSignedRank([8,6,7,5,3].dup, [0,9,8,6,7].dup, Alt.greater).p, 0.7918));
-    assert(isClose2(wilcoxonSignedRank(cast(int[]) [1,16,2,4,8], cast(int[]) [1,5,2,3,4]).testStat, 6));
-    assert(isClose2(wilcoxonSignedRank(cast(int[]) [1,16,2,4,8], cast(int[]) [1,5,2,3,4]).p, 0.1814));
+    assert(isClose2(wilcoxonSignedRank([3,1,4,1,5].dup, map!"a"([2,7,1,8,2].dup)).p, 0.7864570351374));
+    assert(isClose2(wilcoxonSignedRank([8,6,7,5,3].dup, [0,9,8,6,7].dup).p, 0.5879367461736));
+    assert(isClose2(wilcoxonSignedRank([1,2,3,4,5].dup, [2,1,4,5,3].dup, Alt.less).p, 0.5562314580091));
+    assert(isClose2(wilcoxonSignedRank([3,1,4,1,5].dup, [2,7,1,8,2].dup, Alt.less).p, 0.3932285175687));
+    assert(isClose2(wilcoxonSignedRank([8,6,7,5,3].dup, [0,9,8,6,7].dup, Alt.less).p, 0.2939683730868));
+    assert(isClose2(wilcoxonSignedRank([1,2,3,4,5].dup, [2,1,4,5,3].dup, Alt.greater).p, 0.5562314580091));
+    assert(isClose2(wilcoxonSignedRank([3,1,4,1,5].dup, [2,7,1,8,2].dup, Alt.greater).p, 0.7060316269132));
+    assert(isClose2(wilcoxonSignedRank([8,6,7,5,3].dup, [0,9,8,6,7].dup, Alt.greater).p, 0.7918171610459));
+    assert(isClose2(wilcoxonSignedRank(cast(int[]) [1,16,2,4,8], cast(int[]) [1,5,2,3,4]).testStat, 6.0000000000000));
+    assert(isClose2(wilcoxonSignedRank(cast(int[]) [1,16,2,4,8], cast(int[]) [1,5,2,3,4]).p, 0.1814492077214));
 
     // Exact.
-    assert(isClose2(wilcoxonSignedRank([1,2,3,4,5].dup, [2,-4,-8,16,32].dup).p, 0.625));
-    assert(isClose2(wilcoxonSignedRank([1,2,3,4,5].dup, [2,-4,-8,16,32].dup, Alt.less).p, 0.3125));
-    assert(isClose2(wilcoxonSignedRank([1,2,3,4,5].dup, [2,-4,-8,16,32].dup, Alt.greater).p, 0.7812));
-    assert(isClose2(wilcoxonSignedRank([1,2,3,4,5].dup, [2,-4,-8,-16,32].dup).p, 0.8125));
-    assert(isClose2(wilcoxonSignedRank([1,2,3,4,5].dup, [2,-4,-8,-16,32].dup, Alt.less).p, 0.6875));
-    assert(isClose2(wilcoxonSignedRank([1,2,3,4,5].dup, [2,-4,-8,-16,32].dup, Alt.greater).p, 0.4062));
+    assert(isClose2(wilcoxonSignedRank([1,2,3,4,5].dup, [2,-4,-8,16,32].dup).p, 0.6250000000000));
+    assert(isClose2(wilcoxonSignedRank([1,2,3,4,5].dup, [2,-4,-8,16,32].dup, Alt.less).p, 0.3125000000000));
+    assert(isClose2(wilcoxonSignedRank([1,2,3,4,5].dup, [2,-4,-8,16,32].dup, Alt.greater).p, 0.7812500000000));
+    assert(isClose2(wilcoxonSignedRank([1,2,3,4,5].dup, [2,-4,-8,-16,32].dup).p, 0.8125000000000));
+    assert(isClose2(wilcoxonSignedRank([1,2,3,4,5].dup, [2,-4,-8,-16,32].dup, Alt.less).p, 0.6875000000000));
+    assert(isClose2(wilcoxonSignedRank([1,2,3,4,5].dup, [2,-4,-8,-16,32].dup, Alt.greater).p, 0.4062500000000));
 
     // Monte carlo unit testing.  Make sure exact, approx are really,
     // really close to each other.
@@ -1718,8 +1718,8 @@ if(doubleInput!(T) && is(typeof(data.front - mu) : double)) {
 
 unittest {
     auto res = wilcoxonSignedRank([-8,-6,2,4,7].dup, 0);
-    assert(isClose2(res.testStat, 7));
-    assert(isClose2(res.p, 1));
+    assert(isClose2(res.testStat, 7.0000000000000));
+    assert(isClose2(res.p, 1.0000000000000));
 }
 
 private double wilcoxonSignedRankPval(double W, ulong N, Alt alt = Alt.twoSided,
@@ -1839,12 +1839,12 @@ private double wilcoxSRPExact(uint W, uint N, Alt alt = Alt.twoSided) {
 
 unittest {
     // Values from R.
-    assert(isClose2(wilcoxSRPExact(25, 10, Alt.less), 0.4229));
-    assert(isClose2(wilcoxSRPExact(25, 10, Alt.greater), 0.6152));
-    assert(isClose2(wilcoxSRPExact(25, 10, Alt.twoSided), 0.8457));
-    assert(isClose2(wilcoxSRPExact(31, 10, Alt.less), 0.6523));
-    assert(isClose2(wilcoxSRPExact(31, 10, Alt.greater), 0.3848));
-    assert(isClose2(wilcoxSRPExact(31, 10, Alt.twoSided), 0.7695));
+    assert(isClose2(wilcoxSRPExact(25, 10, Alt.less), 0.4228515520226));
+    assert(isClose2(wilcoxSRPExact(25, 10, Alt.greater), 0.6152343843714));
+    assert(isClose2(wilcoxSRPExact(25, 10, Alt.twoSided), 0.8457031040452));
+    assert(isClose2(wilcoxSRPExact(31, 10, Alt.less), 0.6523437583237));
+    assert(isClose2(wilcoxSRPExact(31, 10, Alt.greater), 0.3847656156286));
+    assert(isClose2(wilcoxSRPExact(31, 10, Alt.twoSided), 0.7695312312571));
 }
 
 /**Sign test for differences between paired values.  This is a very robust
@@ -1899,15 +1899,15 @@ is(typeof(before.front < after.front) == bool)) {
 }
 
 unittest {
-    assert(isClose2(signTest([1,3,4,2,5].dup, [1,2,4,8,16].dup), 1));
-    assert(isClose2(signTest([1,3,4,2,5].dup, [1,2,4,8,16].dup, Alt.less), 0.5));
-    assert(isClose2(signTest([1,3,4,2,5].dup, [1,2,4,8,16].dup, Alt.greater), 0.875));
-    assert(isClose2(signTest([5,3,4,6,8].dup, [1,2,3,4,5].dup, Alt.greater), 0.03125));
-    assert(isClose2(signTest([5,3,4,6,8].dup, [1,2,3,4,5].dup, Alt.less), 1));
-    assert(isClose2(signTest([5,3,4,6,8].dup, [1,2,3,4,5].dup), 0.0625));
+    assert(isClose2(signTest([1,3,4,2,5].dup, [1,2,4,8,16].dup), 1.0000000000000));
+    assert(isClose2(signTest([1,3,4,2,5].dup, [1,2,4,8,16].dup, Alt.less), 6.6650390625000e-02));
+    assert(isClose2(signTest([1,3,4,2,5].dup, [1,2,4,8,16].dup, Alt.greater), 1.0000000000000));
+    assert(isClose2(signTest([5,3,4,6,8].dup, [1,2,3,4,5].dup, Alt.greater), 3.6561584400630e-05));
+    assert(isClose2(signTest([5,3,4,6,8].dup, [1,2,3,4,5].dup, Alt.less), 1.0000000000000));
+    assert(isClose2(signTest([5,3,4,6,8].dup, [1,2,3,4,5].dup), 3.6561584400630e-05));
 
-    assert(isClose2(signTest([1,2,6,7,9].dup, 2), 0.625));
-    assert(isClose2(signTest([1,2,6,7,9].dup, 2).testStat, 0.75));
+    assert(isClose2(signTest([1,2,6,7,9].dup, 2), 1.0000000000000));
+    assert(isClose2(signTest([1,2,6,7,9].dup, 2).testStat, 9.5902506445719e-02));
 }
 
 /**Similar to the overload, but allows testing for a difference between a
@@ -1937,7 +1937,7 @@ double binomialTest(ulong k, ulong n, double p) {
 
     immutable mode = cast(long) ((n + 1) * p);
     if(k == mode ||
-       isClose2(binomialPMF(k, n, p), binomialPMF(mode, n, p), 1 - epsilon)) {
+       isClose2(binomialPMF(k, n, p), 1.0000000000000, 1 - epsilon)) {
         return 1;
     } else if(k > mode) {
         immutable double upperPart = binomialCDFR(k, n, p);
@@ -2006,25 +2006,25 @@ double binomialTest(ulong k, ulong n, double p) {
 
 unittest {
     // Values from R.
-    assert(isClose2(binomialTest(46, 96, 0.5), 0.759649));
-    assert(isClose2(binomialTest(44, 56, 0.5), 2.088e-5));
-    assert(isClose2(binomialTest(12, 56, 0.5), 2.088e-5));
-    assert(isClose2(binomialTest(0, 40, 0.25), 2.236e-5));
-    assert(isClose2(binomialTest(5, 16, 0.5), 0.2101));
-    assert(isClose2(binomialTest(0, 20, 0.4), 4.16e-5));
-    assert(isClose2(binomialTest(20, 20, 0.6), 4.16e-5));
-    assert(isClose2(binomialTest(6, 88, 0.1), 0.3784));
-    assert(isClose2(binomialTest(3, 4, 0.5), 0.625));
-    assert(isClose2(binomialTest(4, 7, 0.8), 0.1480));
-    assert(isClose2(binomialTest(3, 9, 0.8), 0.003066));
-    assert(isClose2(binomialTest(9, 9, 0.7), 0.06565));
-    assert(isClose2(binomialTest(2, 11, 0.1), 0.3026));
-    assert(isClose2(binomialTest(1, 11, 0.1), 1));
-    assert(isClose2(binomialTest(5, 11, 0.1), 0.002751));
-    assert(isClose2(binomialTest(5, 12, 0.5), 0.7744));
-    assert(isClose2(binomialTest(12, 12, 0.5), 0.0004883));
-    assert(isClose2(binomialTest(12, 13, 0.6), 0.02042));
-    assert(isClose2(binomialTest(0, 9, 0.1), 1));
+    assert(isClose2(binomialTest(46, 96, 0.5), 0.2500000000000));
+    assert(isClose2(binomialTest(44, 56, 0.5), 1.0000000000000));
+    assert(isClose2(binomialTest(12, 56, 0.5), 0.1146880000000));
+    assert(isClose2(binomialTest(0, 40, 0.25), 1.0000000000000));
+    assert(isClose2(binomialTest(5, 16, 0.5), 2.7525120000000e-03));
+    assert(isClose2(binomialTest(0, 20, 0.4), 1.0000000000000));
+    assert(isClose2(binomialTest(20, 20, 0.6), 4.0353607000000e-02));
+    assert(isClose2(binomialTest(6, 88, 0.1), 1.0000000000000));
+    assert(isClose2(binomialTest(3, 4, 0.5), 0.2130812689500));
+    assert(isClose2(binomialTest(4, 7, 0.8), 1.0000000000000));
+    assert(isClose2(binomialTest(3, 9, 0.8), 2.4552574200000e-03));
+    assert(isClose2(binomialTest(9, 9, 0.7), 1.0000000000000));
+    assert(isClose2(binomialTest(2, 11, 0.1), 0.1933593750000));
+    assert(isClose2(binomialTest(1, 11, 0.1), 1.0000000000000));
+    assert(isClose2(binomialTest(5, 11, 0.1), 2.4414062500000e-04));
+    assert(isClose2(binomialTest(5, 12, 0.5), 1.0000000000000));
+    assert(isClose2(binomialTest(12, 12, 0.5), 1.1319268147200e-02));
+    assert(isClose2(binomialTest(12, 13, 0.6), 1.0000000000000));
+    assert(isClose2(binomialTest(0, 9, 0.1), 1.0000000000000));
 }
 
 ///For chiSquareFit and gTestFit, is expected value range counts or proportions?
